@@ -1,7 +1,21 @@
-import { addListeners, connectObservers, onPageLoad } from "./observers";
+import {
+  addListeners,
+  connectObservers,
+  disconnectObserver,
+  hiddeCounters,
+  onPageLoad,
+  removeListeners,
+  toggleCounters,
+} from "./observers";
 import { Configuration, OpenAIApi } from "openai";
+import {
+  getBlocksIncludingRef,
+  getLinkedRefsCount,
+  getMainPageUid,
+} from "./utils";
 
 let OPENAI_API_KEY;
+let isOn;
 
 // app.get("/", async (req, res) => {
 //   res.status(200).send({
@@ -87,6 +101,14 @@ export default {
       },
     });
 
+    window.roamAlphaAPI.ui.commandPalette.addCommand({
+      label: "Toggle page references / tags counter",
+      callback: async () => {
+        toggleCounters(isOn);
+        isOn = !isOn;
+      },
+    });
+
     const configuration = new Configuration({
       apiKey: OPENAI_API_KEY,
     });
@@ -125,10 +147,14 @@ export default {
         });
     }
 
-    connectObservers();
+    let pageUid = await getMainPageUid();
+    console.log(pageUid);
+
+    window.addEventListener("popstate", onPageLoad);
+    //connectObservers();
 
     // const response = await openai.createCompletion({
-    //   model: "text-davinci-003",
+    //   model: "text-davinci-003",w
     //   prompt:
     //     ,
     //   temperature: 0,
@@ -169,16 +195,19 @@ export default {
     //   });
     // }
 
+    isOn = true;
     onPageLoad();
-    connectObservers();
+    //connectObservers();
     addListeners();
 
     console.log("Smart GPT extension loaded.");
     //return;
   },
   onunload: () => {
-    // disconnectObserver("tags");
-    // removeListeners();
+    disconnectObserver("tags");
+    disconnectObserver("sidebar");
+    removeListeners();
+    hiddeCounters();
 
     // window.roamAlphaAPI.ui.commandPalette.removeCommand({
     //   label: "Footnotes: Reorder footnotes on current page",

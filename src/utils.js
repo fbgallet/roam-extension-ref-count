@@ -43,14 +43,39 @@ export function getPageUidByTitle(title) {
   else return null;
 }
 
-export function getBlocksIncludingRef(uid) {
+// export function getBlocksIncludingRef(uid) {
+//   return window.roamAlphaAPI.q(
+//     `[:find ?u ?s
+//          :where [?r :block/uid ?u]
+//               [?r :block/refs ?b]
+//                 [?r :block/string ?s]
+//             [?b :block/uid "${uid}"]]`
+//   );
+// }
+
+export function countBlocksIncludingRef(uid) {
   return window.roamAlphaAPI.q(
-    `[:find ?u ?s
+    `[:find (count ?u)
          :where [?r :block/uid ?u] 
               [?r :block/refs ?b]
-                [?r :block/string ?s]
             [?b :block/uid "${uid}"]]`
-  );
+  )[0][0];
+}
+
+export function getBlocksIncludingRefByTitle(title) {
+  return window.roamAlphaAPI.q(
+    `[:find (count ?b)
+      :where [?r :node/title "${title}"] 
+           [?b :block/refs ?r]]`
+  )[0][0];
+}
+
+export function getLinkedRefsCount(uid) {
+  return window.roamAlphaAPI.q(
+    `[:find (count ?b)
+         :where [?r :block/uid "${uid}"] 
+              [?b :block/refs ?r]]`
+  )[0][0];
 }
 
 function getFirstChildUid(uid) {
