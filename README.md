@@ -1,6 +1,6 @@
-# Page reference counter
+# Page references counter
 
-Inline page references count as superscript ! Counts are also displayed when you search for a reference, directly in the autocomplete box.
+### Inline page references count as superscript ! Counts are also displayed when you search for a reference, directly in the autocomplete box.
 
 ![ref-count-v1](https://user-images.githubusercontent.com/74436347/218118672-4d7e74aa-e47f-49fb-ac95-7e59e2b1b854.gif)
 
