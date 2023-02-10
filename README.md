@@ -1,3 +1,3 @@
-# Smart GPT for Roam Research
+# Reference counter for Roam Research
 
-🚧 Work in progress (very beginning)
+🚧 Work in progress
