@@ -1,50 +1,13 @@
 import {
   addListeners,
-  connectObservers,
   disconnectObserver,
   hiddeCounters,
   onPageLoad,
   removeListeners,
   toggleCounters,
 } from "./observers";
-import { Configuration, OpenAIApi } from "openai";
-import {
-  getBlocksIncludingRef,
-  getLinkedRefsCount,
-  getMainPageUid,
-} from "./utils";
 
-let OPENAI_API_KEY;
 let isOn;
-
-// app.get("/", async (req, res) => {
-//   res.status(200).send({
-//     message: "Hello !",
-//   });
-// });
-
-// app.post("/", async (req, res) => {
-//   try {
-//     const prompt = req.body.prompt;
-
-//     const response = await openai.createCompletion({
-//       model: "text-davinci-003",
-//       prompt: `${prompt}`,
-//       temperature: 0,
-//       max_tokens: 1000,
-//       top_p: 1,
-//       frequency_penalty: 0.5,
-//       presence_penalty: 0,
-//     });
-
-//     res.status(200).send({
-//       bot: response.data.choices[0].text,
-//     });
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).send({ error });
-//   }
-// });
 
 const panelConfig = {
   tabTitle: "Blocks infos",
@@ -95,13 +58,6 @@ export default {
     await extensionAPI.settings.panel.create(panelConfig);
 
     window.roamAlphaAPI.ui.commandPalette.addCommand({
-      label: "Smart GPT",
-      callback: async () => {
-        console.log("Smart GPT!");
-      },
-    });
-
-    window.roamAlphaAPI.ui.commandPalette.addCommand({
       label: "Toggle page references / tags counter",
       callback: async () => {
         toggleCounters(isOn);
@@ -109,62 +65,10 @@ export default {
       },
     });
 
-    const configuration = new Configuration({
-      apiKey: OPENAI_API_KEY,
-    });
-    console.log(configuration);
-
-    const openai = new OpenAIApi(configuration);
-    // const response = await openai.listEngines();
-
-    function requestCompletion(prompt) {
-      const requestOptions = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + String(OPENAI_API_KEY),
-        },
-        body: JSON.stringify({
-          prompt: prompt,
-          temperature: 0.9,
-          max_tokens: 150,
-          top_p: 1,
-          frequency_penalty: 0,
-          presence_penalty: 0.5,
-          stop: ['"""'],
-        }),
-      };
-      fetch(
-        "https://api.openai.com/v1/engines/text-davinci-003/completions",
-        requestOptions
-      )
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data);
-        })
-        .catch((err) => {
-          console.log("Ran out of tokens for today! Try tomorrow!");
-        });
-    }
-
-    let pageUid = await getMainPageUid();
-    console.log(pageUid);
-
+    isOn = true;
+    onPageLoad();
+    addListeners();
     window.addEventListener("popstate", onPageLoad);
-    //connectObservers();
-
-    // const response = await openai.createCompletion({
-    //   model: "text-davinci-003",w
-    //   prompt:
-    //     ,
-    //   temperature: 0,
-    //   max_tokens: 100,
-    //   top_p: 1,
-    //   frequency_penalty: 0.0,
-    //   presence_penalty: 0.0,
-    //   stop: ["\n"],
-    // });
-    //console.log(response);
 
     // Add command to block context menu
     // roamAlphaAPI.ui.blockContextMenu.addCommand({
@@ -194,11 +98,6 @@ export default {
     //       window.roamjs.extension.smartblocks.registerCommand(insertCmd);
     //   });
     // }
-
-    isOn = true;
-    onPageLoad();
-    //connectObservers();
-    addListeners();
 
     console.log("Smart GPT extension loaded.");
     //return;

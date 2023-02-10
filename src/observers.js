@@ -1,4 +1,4 @@
-import { countBlocksIncludingRef, getBlocksIncludingRefByTitle } from "./utils";
+import { getBlocksIncludingRefByTitle } from "./utils";
 
 var runners = {
   menuItems: [],
@@ -14,7 +14,6 @@ export function connectObservers() {
     {
       childList: true,
       subtree: true,
-      //   attributeFilter: ["class"],
     },
     "tags"
   );
@@ -24,7 +23,6 @@ export function connectObservers() {
     {
       childList: true,
       subtree: false,
-      //   attributeFilter: ["class"],
     },
     "sidebar"
   );
@@ -59,7 +57,6 @@ function onSidebarOpen(mutation) {
           insertSupAfterRefs(mutation[i].target);
           return;
         }
-        //else if (i == 1) insertSupAfterRefs(mutation[i].target);
       }
     }
   }, 50);
@@ -72,8 +69,7 @@ function onBlockUpdate(mutation) {
   )
     return;
 
-  console.log(mutation);
-
+  //console.log(mutation);
   for (let i = 0; i < mutation.length; i++) {
     if (
       mutation[i].target.localName != "textarea" &&
@@ -81,26 +77,19 @@ function onBlockUpdate(mutation) {
       mutation[i].addedNodes.length > 0
     ) {
       if (mutation[i].addedNodes[0].classList?.contains("rm-block")) {
-        console.log("block displayed");
-        // mutation[i].addedNodes.forEach((node) => {
-        //   insertSupAfterRefs(node);
-        // });
+        //  console.log("blocks expanded");
         insertSupAfterRefs(mutation[i].addedNodes[0]);
       } else if (
         mutation[i].addedNodes[0].classList?.contains("rm-block__input")
       ) {
-        console.log("block updated");
-        let uid = mutation[i].addedNodes[0].id.slice(-9);
-        console.log(uid);
+        // console.log("block updated");
         insertSupAfterRefs(mutation[i].target);
-        // => get roam-block-container du target pour faire un querySelectorAll de tous les enfants
-        // seuls les blocs enfants du 1er niveau sont listés ici
       } else if (
         mutation[i].addedNodes[0].classList?.contains("rm-mentions") ||
         mutation[i].addedNodes[0].parentElement?.className ===
           "rm-ref-page-view"
       ) {
-        console.log("In Linked refs");
+        //console.log("In Linked refs");
         let elt = mutation[i].target.querySelectorAll(".roam-block-container");
         elt.forEach((node) => {
           insertSupAfterRefs(node);
@@ -114,25 +103,11 @@ function onBlockUpdate(mutation) {
       }
     }
   }
-  // let focusedBlock = document.querySelector(".rm-focused");
-  // if (
-  //   focusedBlock &&
-  //   (!observing || lastTextarea != focusedBlock.querySelector("textarea"))
-  // ) {
-  //   observing = true;
-  //   let textarea = focusedBlock.querySelector("textarea");
-  //   let uid = textarea.id.slice(-9);
-  //   console.log(uid);
-  //   textarea.addEventListener("change", onTextareaChange);
-  // }
 }
 
-function onTextareaChange(e) {
-  console.log(e.target.value);
-  observing = false;
+export function addListeners() {
+  window.addEventListener("popstate", onPageLoad);
 }
-
-export function addListeners() {}
 
 export function removeListeners() {
   window.removeEventListener("popstate", onPageLoad);
@@ -154,34 +129,23 @@ export function onPageLoad(e) {
 function insertSupAfterRefs(elt = document) {
   refs = [];
   counters = [];
-  let d;
-  let e;
+  let b, e;
   setTimeout(() => {
     let mentions = elt.querySelectorAll(".rm-page-ref--link");
-    d = performance.now();
+    //    b = performance.now();
     mentions.forEach((mention) => {
-      // let uid = mention.parentElement.dataset.linkUid;
       let title = mention.parentElement.dataset.linkTitle;
-      // à exclure: query ?
-      // if (
-      //   mention.parentElement.dataset.linkTitle != "DONE" &&
-      //   mention.parentElement.dataset.linkTitle != "TODO"
-      // ) {
       displayCounter(mention, getCountOptimized(title));
-      //}
     });
-    e = performance.now();
-    console.log(`1: ${e - d}`);
+    //    e = performance.now();
+    //    console.log(`1: ${e - b}`);
 
     let tags = elt.querySelectorAll(".rm-page-ref--tag");
-    d = performance.now();
     tags.forEach((mention) => {
       let title = mention.dataset.tag;
       if (!title.includes("c:") && !(title.indexOf(".") == 0))
         displayCounter(mention, getCountOptimized(title));
     });
-    e = performance.now();
-    console.log(`Tags: ${e - d}`);
   }, 20);
 }
 
