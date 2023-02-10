@@ -13,5 +13,13 @@
     "openai": "^3.1.0",
     "roamjs-components": "^0.75.1",
     "roamjs-scripts": "^0.26.27"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fbgallet/roam-extension-smart-gpt.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fbgallet/roam-extension-smart-gpt/issues"
+  },
+  "homepage": "https://github.com/fbgallet/roam-extension-smart-gpt#readme"
 }

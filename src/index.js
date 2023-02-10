@@ -1,5 +1,6 @@
 import {
   addListeners,
+  connectObservers,
   disconnectObserver,
   hiddeCounters,
   onPageLoad,
@@ -7,42 +8,33 @@ import {
   toggleCounters,
 } from "./observers";
 
-let isOn;
+export let isOn;
+export let autocompleteCount;
 
 const panelConfig = {
   tabTitle: "Blocks infos",
   settings: [
-    // {
-    //   id: "displayName",
-    //   name: "User Name",
-    //   description: "Display the name of the last user who updated the block",
-    //   action: {
-    //     type: "switch",
-    //     onChange: (evt) => {
-    //       displayEditName = !displayEditName;
-    //     },
-    //   },
-    // },
-    // {
-    //   id: "dateFormat",
-    //   name: "Date format",
-    //   description: "Select how dates are displayed",
-    //   action: {
-    //     type: "select",
-    //     items: ["short", "medium", "long", "full"],
-    //     onChange: (evt) => {
-    //       dateFormat = evt;
-    //     },
-    //   },
-    // },
     {
-      id: "APIkey",
-      name: "API key",
-      description: "Paste here your OpenAI API key (needed):",
+      id: "toggle",
+      name: "Toggle inline count",
+      description: "Toggle inline page reference & tag counter:",
       action: {
-        type: "input",
+        type: "switch",
         onChange: (evt) => {
-          OPENAI_API_KEY = evt.target.value;
+          toggleCounters(isOn);
+          isOn = !isOn;
+        },
+      },
+    },
+    {
+      id: "toggleAutocomplete",
+      name: "Toggle autocomplete count",
+      description:
+        "Toggle page references counter in search and autocomplete box:",
+      action: {
+        type: "switch",
+        onChange: (evt) => {
+          autocompleteCount = !autocompleteCount;
         },
       },
     },
@@ -51,24 +43,35 @@ const panelConfig = {
 
 export default {
   onload: async ({ extensionAPI }) => {
-    if (extensionAPI.settings.get("APIkey") === null)
-      await extensionAPI.settings.set("APIkey", "");
-    OPENAI_API_KEY = extensionAPI.settings.get("APIkey");
+    if (extensionAPI.settings.get("toggle") === null)
+      await extensionAPI.settings.set("toggle", true);
+    isOn = extensionAPI.settings.get("toggle");
+    if (extensionAPI.settings.get("toggleAutocomplete") === null)
+      await extensionAPI.settings.set("toggleAutocomplete", true);
+    autocompleteCount = extensionAPI.settings.get("toggleAutocomplete");
 
     await extensionAPI.settings.panel.create(panelConfig);
 
     window.roamAlphaAPI.ui.commandPalette.addCommand({
-      label: "Toggle page references / tags counter",
+      label: "Toggle inline page references / tags counter",
       callback: async () => {
         toggleCounters(isOn);
         isOn = !isOn;
+        extensionAPI.settings.set("toggle", isOn);
+      },
+    });
+    window.roamAlphaAPI.ui.commandPalette.addCommand({
+      label: "Toggle page references counter in search / autocomplete box",
+      callback: async () => {
+        autocompleteCount = !autocompleteCount;
+        extensionAPI.settings.set("toggleAutocomplete", autocompleteCount);
       },
     });
 
-    isOn = true;
-    onPageLoad();
-    addListeners();
-    window.addEventListener("popstate", onPageLoad);
+    if (isOn) {
+      onPageLoad();
+      addListeners();
+    } else connectObservers();
 
     // Add command to block context menu
     // roamAlphaAPI.ui.blockContextMenu.addCommand({
@@ -99,7 +102,7 @@ export default {
     //   });
     // }
 
-    console.log("Smart GPT extension loaded.");
+    console.log("References counter extension loaded.");
     //return;
   },
   onunload: () => {
@@ -115,6 +118,6 @@ export default {
     // roamAlphaAPI.ui.blockContextMenu.removeCommand({
     //   label: "Color Highlighter: Remove color tags",
     // });
-    console.log("Smart GPT extension unloaded");
+    console.log("References counter extension unloaded");
   },
 };

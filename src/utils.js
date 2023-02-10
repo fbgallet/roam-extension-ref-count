@@ -63,11 +63,13 @@ export function countBlocksIncludingRef(uid) {
 }
 
 export function getBlocksIncludingRefByTitle(title) {
-  return window.roamAlphaAPI.q(
+  let result = window.roamAlphaAPI.q(
     `[:find (count ?b)
       :where [?r :node/title "${title}"] 
            [?b :block/refs ?r]]`
-  )[0][0];
+  );
+  if (result.length > 0) return result[0][0];
+  else return 0;
 }
 
 export function getLinkedRefsCount(uid) {

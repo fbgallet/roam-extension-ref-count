@@ -1,3 +1,4 @@
+import { autocompleteCount, isOn } from ".";
 import { getBlocksIncludingRefByTitle } from "./utils";
 
 var runners = {
@@ -8,24 +9,26 @@ var refs = [];
 var counters = [];
 
 export function connectObservers() {
-  addObserver(
-    document.getElementsByClassName("roam-app")[0],
-    onBlockUpdate,
-    {
-      childList: true,
-      subtree: true,
-    },
-    "tags"
-  );
-  addObserver(
-    document.getElementById("right-sidebar"),
-    onSidebarOpen,
-    {
-      childList: true,
-      subtree: false,
-    },
-    "sidebar"
-  );
+  if (autocompleteCount || isOn)
+    addObserver(
+      document.getElementsByClassName("roam-app")[0],
+      onBlockUpdate,
+      {
+        childList: true,
+        subtree: true,
+      },
+      "tags"
+    );
+  if (isOn)
+    addObserver(
+      document.getElementById("right-sidebar"),
+      onSidebarOpen,
+      {
+        childList: true,
+        subtree: false,
+      },
+      "sidebar"
+    );
 }
 
 function addObserver(element, callback, options, name) {
@@ -41,8 +44,6 @@ export function disconnectObserver(name) {
       element.disconnect();
     }
 }
-
-var observing = false;
 
 function onSidebarOpen(mutation) {
   setTimeout(() => {
@@ -64,45 +65,107 @@ function onSidebarOpen(mutation) {
 
 function onBlockUpdate(mutation) {
   if (
-    mutation[0].target.closest(".roam-sidebar-container") ||
-    mutation[0].target.closest(".rm-topbar")
+    mutation[0].target.closest(".roam-sidebar-container") &&
+    mutation[0].target.className === "ref-count-extension"
+    //mutation[0].target.closest(".rm-topbar")
   )
     return;
-
+  else if (mutation[0].target.closest(".rm-topbar")) {
+    let search = document.querySelector(".rm-find-or-create__menu");
+    if (autocompleteCount && search) onSearch(search);
+    else return;
+  }
   //console.log(mutation);
-  for (let i = 0; i < mutation.length; i++) {
-    if (
-      mutation[i].target.localName != "textarea" &&
-      mutation[i].target.localName != "span" &&
-      mutation[i].addedNodes.length > 0
-    ) {
-      if (mutation[i].addedNodes[0].classList?.contains("rm-block")) {
-        //  console.log("blocks expanded");
-        insertSupAfterRefs(mutation[i].addedNodes[0]);
-      } else if (
-        mutation[i].addedNodes[0].classList?.contains("rm-block__input")
+  if (isOn) {
+    for (let i = 0; i < mutation.length; i++) {
+      if (
+        mutation[i].addedNodes.length > 0 &&
+        mutation[i].target.localName != "span" &&
+        mutation[i].target.localName != "textarea"
       ) {
-        // console.log("block updated");
-        insertSupAfterRefs(mutation[i].target);
-      } else if (
-        mutation[i].addedNodes[0].classList?.contains("rm-mentions") ||
-        mutation[i].addedNodes[0].parentElement?.className ===
-          "rm-ref-page-view"
-      ) {
-        //console.log("In Linked refs");
-        let elt = mutation[i].target.querySelectorAll(".roam-block-container");
-        elt.forEach((node) => {
-          insertSupAfterRefs(node);
-        });
-      } else if (
-        mutation[i].addedNodes[0].parentElement?.className === "sidebar-content"
-      ) {
-        insertSupAfterRefs(mutation[i].addedNodes[0]);
-      } else if (mutation[i].target.className === "rm-sidebar-window") {
-        insertSupAfterRefs(mutation[i].target);
+        if (mutation[i].addedNodes[0].classList?.contains("rm-block")) {
+          //  console.log("blocks expanded");
+          insertSupAfterRefs(mutation[i].addedNodes[0]);
+          //return;
+        } else if (
+          mutation[i].addedNodes[0].classList?.contains("rm-block__input")
+        ) {
+          // console.log("block updated");
+          insertSupAfterRefs(mutation[i].target);
+          //return;
+        } else if (
+          mutation[i].addedNodes[0].classList?.contains("rm-mentions") ||
+          mutation[i].addedNodes[0].parentElement?.className ===
+            "rm-ref-page-view"
+        ) {
+          //console.log("In Linked refs");
+          let elt = mutation[i].target.querySelectorAll(
+            ".roam-block-container"
+          );
+          elt.forEach((node) => {
+            insertSupAfterRefs(node);
+          });
+          return;
+        } else if (
+          //console.log("In right sidebar");
+          mutation[i].addedNodes[0].parentElement?.className ===
+          "sidebar-content"
+        ) {
+          insertSupAfterRefs(mutation[i].addedNodes[0]);
+          return;
+        } else if (mutation[i].target.className === "rm-sidebar-window") {
+          insertSupAfterRefs(mutation[i].target);
+          return;
+        }
       }
     }
   }
+  if (
+    autocompleteCount &&
+    document.querySelector(".rm-autocomplete__results")
+  ) {
+    onAutocomplete();
+    //return;
+  }
+}
+
+function onAutocomplete() {
+  const blockAutocomplete = document.getElementsByClassName(
+    "rm-autocomplete__results"
+  )[0];
+  //console.log(blockAutocomplete);
+  if (blockAutocomplete) {
+    let suggestions = blockAutocomplete.querySelectorAll(".dont-unfocus-block");
+    if (suggestions) {
+      // if block autocomplete, stop here
+      if (suggestions[0].querySelector(".bp3-text-overflow-ellipsis")) {
+        return;
+      }
+      hiddeCounters(blockAutocomplete);
+      suggestions.forEach((ref) => {
+        let title = ref.getAttribute("title");
+        if (title != "Search for a Page" && title != "Search for a Block") {
+          let count = getCountOptimized(title);
+          displayCounter(ref.childNodes[0].childNodes[0], count);
+        }
+      });
+    }
+  }
+}
+
+function onSearch(searchMenu) {
+  // get only pages title
+  let titles = searchMenu.querySelectorAll(".rm-search-title");
+  hiddeCounters(searchMenu);
+  disconnectObserver("tags");
+  titles.forEach((title) => {
+    let textTitle = title.childNodes[0].textContent;
+    if (!textTitle.includes("New Page:")) {
+      let count = getCountOptimized(textTitle);
+      displayCounter(title.childNodes[0], count);
+    }
+  });
+  connectObservers();
 }
 
 export function addListeners() {
@@ -129,7 +192,7 @@ export function onPageLoad(e) {
 function insertSupAfterRefs(elt = document) {
   refs = [];
   counters = [];
-  let b, e;
+  //let b, e;
   setTimeout(() => {
     let mentions = elt.querySelectorAll(".rm-page-ref--link");
     //    b = performance.now();
@@ -165,20 +228,20 @@ function getCountOptimized(title) {
 function displayCounter(target, counter) {
   let elt = document.createElement("span");
   elt.innerHTML = `<sup class="ref-count-extension">${counter}</sup>`;
-  target.nextSibling && !target.dataset.tag
+  target.nextSibling && !target.dataset?.tag
     ? insertAfter(target.nextSibling, elt)
     : insertAfter(target, elt);
 }
 
-export function hiddeCounters() {
-  let counters = document.querySelectorAll(".ref-count-extension");
+export function hiddeCounters(elt = document) {
+  let counters = elt.querySelectorAll(".ref-count-extension");
   counters.forEach((c) => c.remove());
 }
 
 export function toggleCounters(isOn) {
   if (isOn) {
     hiddeCounters();
-    disconnectObserver("tags");
+    //disconnectObserver("tags");
     disconnectObserver("sidebar");
     removeListeners();
   } else {
