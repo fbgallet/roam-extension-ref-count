@@ -1,9 +1,26 @@
-sup.ref-count-extension {
-  opacity: 0.6;
+.ref-count-hidden {
+  display: none;
   font-size: 60%;
   padding-left: 2px;
 }
 
-/* sup.ref-count-extension:hover {
-  opacity: 0.6;
-} */
+.ref-count-visible {
+  font-size: 60%;
+  padding-left: 2px;
+}
+
+.rc-op-025 {
+  opacity: 0.25;
+}
+.rc-op-050 {
+  opacity: 0.5;
+}
+.rc-op-075 {
+  opacity: 0.75;
+}
+
+.rm-attr-ref:hover + span > sup.ref-count-hidden,
+.rm-page-ref:hover + span > sup.ref-count-hidden {
+  display: inline;
+  cursor: none;
+}

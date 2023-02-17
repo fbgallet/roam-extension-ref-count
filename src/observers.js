@@ -1,4 +1,4 @@
-import { autocompleteCount, isOn } from ".";
+import { autocompleteCount, countClass, countOpacity, isOn } from ".";
 import { getBlocksIncludingRefByTitle } from "./utils";
 
 var runners = {
@@ -7,6 +7,7 @@ var runners = {
 };
 var refs = [];
 var counters = [];
+var excludedTags = /^\..*|^c:.*|c-.*/;
 
 export function connectObservers() {
   if (autocompleteCount || isOn)
@@ -146,7 +147,12 @@ function onAutocomplete() {
         let title = ref.getAttribute("title");
         if (title != "Search for a Page" && title != "Search for a Block") {
           let count = getCountOptimized(title);
-          displayCounter(ref.childNodes[0].childNodes[0], count);
+          displayCounter(
+            ref.childNodes[0].childNodes[0],
+            count,
+            "autocomplete",
+            "ref-count-visible"
+          );
         }
       });
     }
@@ -162,7 +168,12 @@ function onSearch(searchMenu) {
     let textTitle = title.childNodes[0].textContent;
     if (!textTitle.includes("New Page:")) {
       let count = getCountOptimized(textTitle);
-      displayCounter(title.childNodes[0], count);
+      displayCounter(
+        title.childNodes[0],
+        count,
+        "autocomplete",
+        "ref-count-visible"
+      );
     }
   });
   connectObservers();
@@ -198,7 +209,7 @@ function insertSupAfterRefs(elt = document) {
     //    b = performance.now();
     mentions.forEach((mention) => {
       let title = mention.parentElement.dataset.linkTitle;
-      displayCounter(mention, getCountOptimized(title));
+      displayCounter(mention, getCountOptimized(title), "ref");
     });
     //    e = performance.now();
     //    console.log(`1: ${e - b}`);
@@ -206,10 +217,22 @@ function insertSupAfterRefs(elt = document) {
     let tags = elt.querySelectorAll(".rm-page-ref--tag");
     tags.forEach((mention) => {
       let title = mention.dataset.tag;
-      if (!title.includes("c:") && !(title.indexOf(".") == 0))
-        displayCounter(mention, getCountOptimized(title));
+      //      if (!title.includes("c:") && !(title.indexOf(".") == 0))
+      if (!isExcludedFromCount(title))
+        displayCounter(mention, getCountOptimized(title), "tag");
     });
   }, 20);
+
+  let attributs = elt.querySelectorAll(".rm-attr-ref");
+  attributs.forEach((attr) => {
+    let title = attr.textContent.slice(0, -1);
+    displayCounter(attr, getCountOptimized(title), "attribute");
+  });
+}
+
+function isExcludedFromCount(title) {
+  if (excludedTags.test(title)) return true;
+  else return false;
 }
 
 function getCountOptimized(title) {
@@ -225,17 +248,30 @@ function getCountOptimized(title) {
   return count;
 }
 
-function displayCounter(target, counter) {
+function displayCounter(target, counter, type, displayClass = countClass) {
   let elt = document.createElement("span");
-  elt.innerHTML = `<sup class="ref-count-extension">${counter}</sup>`;
-  target.nextSibling && !target.dataset?.tag
-    ? insertAfter(target.nextSibling, elt)
-    : insertAfter(target, elt);
+  elt.innerHTML = `<sup class="${displayClass} ${countOpacity}">${counter}</sup>`;
+  switch (type) {
+    case "ref":
+      if (target.nextSibling && displayClass == "ref-count-visible") {
+        insertAfter(target.nextSibling, elt);
+        break;
+      }
+    // case "tag":
+    // insertAfter(target.nextSibling, elt);
+    // insertAfter(target, elt);
+    // break;
+    // case "attribute":
+    //   target.insertAdjacentElement("beforeend", elt);
+    //   break;
+    default:
+      insertAfter(target, elt);
+  }
 }
 
 export function hiddeCounters(elt = document) {
-  let counters = elt.querySelectorAll(".ref-count-extension");
-  counters.forEach((c) => c.remove());
+  let counters = elt.querySelectorAll("[class^='ref-count-']");
+  counters.forEach((c) => c.parentElement.remove());
 }
 
 export function toggleCounters(isOn) {
