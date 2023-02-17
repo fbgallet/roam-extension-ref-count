@@ -1,8 +1,8 @@
+import { hiddeCounters } from "./display";
 import {
   addListeners,
   connectObservers,
   disconnectObserver,
-  hiddeCounters,
   onPageLoad,
   removeListeners,
   toggleCounters,
@@ -99,7 +99,7 @@ export default {
       await extensionAPI.settings.set("toggleAutocomplete", true);
     autocompleteCount = extensionAPI.settings.get("toggleAutocomplete");
     if (extensionAPI.settings.get("countOnHover") === null)
-      await extensionAPI.settings.set("countOnHover", true);
+      await extensionAPI.settings.set("countOnHover", false);
     countOnHover = extensionAPI.settings.get("countOnHover");
     countOnHover
       ? (countClass = "ref-count-hidden")
@@ -110,15 +110,15 @@ export default {
 
     await extensionAPI.settings.panel.create(panelConfig);
 
-    window.roamAlphaAPI.ui.commandPalette.addCommand({
-      label: "Toggle inline page references / tags counter",
+    extensionAPI.ui.commandPalette.addCommand({
+      label: "Toggle inline page references / tags / attributes counter",
       callback: async () => {
         toggleCounters(isOn);
         isOn = !isOn;
         extensionAPI.settings.set("toggle", isOn);
       },
     });
-    window.roamAlphaAPI.ui.commandPalette.addCommand({
+    extensionAPI.ui.commandPalette.addCommand({
       label: "Toggle page references counter in search / autocomplete box",
       callback: async () => {
         autocompleteCount = !autocompleteCount;
