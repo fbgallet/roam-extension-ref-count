@@ -2,7 +2,7 @@ import { countClass, countOpacity } from ".";
 import { counters, refs } from "./observers";
 import { getBlocksIncludingRefByTitle } from "./utils";
 
-const excludedTags = /^\..*|^c:.*|c-.*/;
+const excludedTags = /^\..*|^c:.*|^c-.*|^blck[:|-].*/;
 
 export function insertSupAfterRefs(elt = document) {
   // refs = [];
@@ -12,25 +12,37 @@ export function insertSupAfterRefs(elt = document) {
     let mentions = elt.querySelectorAll(".rm-page-ref--link");
     //    b = performance.now();
     mentions.forEach((mention) => {
-      let title = mention.parentElement.dataset.linkTitle;
-      displayCounter(mention, getCountOptimized(title), "ref");
+      if (!hasCount(mention)) {
+        let title = mention.parentElement.dataset.linkTitle;
+        displayCounter(mention, getCountOptimized(title), "ref");
+      }
     });
     //    e = performance.now();
     //    console.log(`1: ${e - b}`);
 
     let tags = elt.querySelectorAll(".rm-page-ref--tag");
     tags.forEach((mention) => {
-      let title = mention.dataset.tag;
-      if (!isExcludedFromCount(title))
-        displayCounter(mention, getCountOptimized(title), "tag");
+      if (!hasCount(mention)) {
+        let title = mention.dataset.tag;
+        if (!isExcludedFromCount(title))
+          displayCounter(mention, getCountOptimized(title), "tag");
+      }
     });
   }, 20);
 
   let attributs = elt.querySelectorAll(".rm-attr-ref");
   attributs.forEach((attr) => {
-    let title = attr.textContent.slice(0, -1);
-    displayCounter(attr, getCountOptimized(title), "attribute");
+    if (!hasCount(attr)) {
+      let title = attr.textContent.slice(0, -1);
+      displayCounter(attr, getCountOptimized(title), "attribute");
+    }
   });
+}
+
+function hasCount(elt) {
+  let n = elt.nextSibling?.firstChild?.nodeName;
+  if (n === "SUP") return true;
+  else return false;
 }
 
 function isExcludedFromCount(title) {
