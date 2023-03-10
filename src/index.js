@@ -49,12 +49,7 @@ const panelConfig = {
       action: {
         type: "switch",
         onChange: (evt) => {
-          hiddeCounters();
-          countOnHover = !countOnHover;
-          countOnHover
-            ? (countClass = "ref-count-hidden")
-            : (countClass = "ref-count-visible");
-          onPageLoad();
+          toggleOnHover();
         },
       },
     },
@@ -124,6 +119,15 @@ function setSize(value) {
   }
 }
 
+function toggleOnHover() {
+  hiddeCounters();
+  countOnHover = !countOnHover;
+  countOnHover
+    ? (countClass = "ref-count-hidden")
+    : (countClass = "ref-count-visible");
+  onPageLoad();
+}
+
 export default {
   onload: async ({ extensionAPI }) => {
     if (extensionAPI.settings.get("toggle") === null)
@@ -148,7 +152,7 @@ export default {
     await extensionAPI.settings.panel.create(panelConfig);
 
     extensionAPI.ui.commandPalette.addCommand({
-      label: "Toggle inline page references / tags / attributes counter",
+      label: "Page ref counter: Toggle inline counter",
       callback: async () => {
         toggleCounters(isOn);
         isOn = !isOn;
@@ -156,10 +160,17 @@ export default {
       },
     });
     extensionAPI.ui.commandPalette.addCommand({
-      label: "Toggle page references counter in search / autocomplete box",
+      label: "Page ref counter: Toggle counter in search / autocomplete box",
       callback: async () => {
         autocompleteCount = !autocompleteCount;
         extensionAPI.settings.set("toggleAutocomplete", autocompleteCount);
+      },
+    });
+    extensionAPI.ui.commandPalette.addCommand({
+      label: "Page ref counter: Toggle display on hover",
+      callback: async () => {
+        toggleOnHover();
+        extensionAPI.settings.set("countOnHover", countOnHover);
       },
     });
 
@@ -203,6 +214,7 @@ export default {
   onunload: () => {
     disconnectObserver("tags");
     disconnectObserver("sidebar");
+    disconnectObserver("logs");
     removeListeners();
     hiddeCounters();
 

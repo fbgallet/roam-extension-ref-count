@@ -13,7 +13,7 @@ var runners = {
 export var refs = [];
 export var counters = [];
 
-export function connectObservers() {
+export function connectObservers(logPage = null) {
   if (autocompleteCount || isOn)
     addObserver(
       document.getElementsByClassName("roam-app")[0],
@@ -34,6 +34,17 @@ export function connectObservers() {
       },
       "sidebar"
     );
+  if (logPage) {
+    addObserver(
+      document.getElementsByClassName("roam-log-container")[0],
+      onNewPageInDailyLog,
+      {
+        childList: true,
+        subtree: false,
+      },
+      "logs"
+    );
+  }
 }
 
 function addObserver(element, callback, options, name) {
@@ -65,6 +76,12 @@ function onSidebarOpen(mutation) {
         }
       }
     }
+  }, 50);
+}
+
+function onNewPageInDailyLog(mutation) {
+  setTimeout(() => {
+    insertSupAfterRefs();
   }, 50);
 }
 
@@ -194,13 +211,15 @@ export function removeListeners() {
 export function onPageLoad(e) {
   disconnectObserver("tags");
   disconnectObserver("sidebar");
+  disconnectObserver("logs");
   refs = [];
   counters = [];
   setTimeout(() => {
     insertSupAfterRefs();
   }, 50);
   setTimeout(() => {
-    connectObservers();
+    let logPage = document.querySelector(".roam-log-container");
+    connectObservers(logPage);
   }, 500);
 }
 
@@ -209,6 +228,7 @@ export function toggleCounters(isOn) {
     hiddeCounters();
     //disconnectObserver("tags");
     disconnectObserver("sidebar");
+    disconnectObserver("logs");
     removeListeners();
   } else {
     onPageLoad();
