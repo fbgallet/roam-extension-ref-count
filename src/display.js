@@ -1,4 +1,4 @@
-import { countClass, countOpacity } from ".";
+import { countClass, countOpacity, countSize } from ".";
 import { counters, refs } from "./observers";
 import { getBlocksIncludingRefByTitle } from "./utils";
 
@@ -42,7 +42,11 @@ export function insertSupAfterRefs(elt = document) {
 function hasCount(elt) {
   let n = elt.nextSibling?.firstChild?.nodeName;
   if (n === "SUP") return true;
-  else return false;
+  else {
+    let n2 = elt.nextSibling?.nextSibling?.firstChild?.nodeName;
+    if (n2 === "SUP") return true;
+    return false;
+  }
 }
 
 function isExcludedFromCount(title) {
@@ -70,7 +74,7 @@ export function displayCounter(
   displayClass = countClass
 ) {
   let elt = document.createElement("span");
-  elt.innerHTML = `<sup class="${displayClass} ${countOpacity}">${counter}</sup>`;
+  elt.innerHTML = `<sup class="${displayClass} ${countOpacity} ${countSize}">${counter}</sup>`;
   switch (type) {
     case "ref":
       if (target.nextSibling && displayClass == "ref-count-visible") {

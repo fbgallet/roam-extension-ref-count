@@ -1,11 +1,11 @@
 .ref-count-hidden {
   display: none;
-  font-size: 60%;
+  font-size: 64%;
   padding-left: 2px;
 }
 
 .ref-count-visible {
-  font-size: 60%;
+  font-size: 64%;
   padding-left: 2px;
 }
 
@@ -23,4 +23,40 @@
 .rm-page-ref:hover + span > sup.ref-count-hidden {
   display: inline;
   cursor: none;
+}
+
+.rm-page-ref__brackets + span > sup.ref-count-visible {
+  padding-left: 1px;
+}
+
+.rm-page-ref__brackets + span > sup.ref-count-visible.rc-small,
+.rm-page-ref__brackets + span > sup.ref-count-visible.rc-xsmall {
+  padding-left: 0px;
+}
+
+.rc-xsmall {
+  font-size: 49%;
+}
+sup.rc-xsmall {
+  top: -0.85em !important;
+}
+
+.rc-small {
+  font-size: 57%;
+}
+sup.rc-small {
+  top: -0.65em !important;
+}
+
+.rc-large {
+  font-size: 72%;
+}
+sup.rc-large {
+  top: -0.35em;
+}
+.rc-xlarge {
+  font-size: 77%;
+}
+sup.rc-xlarge {
+  top: -0.25em;
 }

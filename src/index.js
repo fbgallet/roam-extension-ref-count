@@ -13,6 +13,7 @@ export let autocompleteCount;
 let countOnHover;
 export let countClass;
 export let countOpacity;
+export let countSize;
 
 const panelConfig = {
   tabTitle: "Blocks infos",
@@ -71,6 +72,20 @@ const panelConfig = {
         },
       },
     },
+    {
+      id: "size",
+      name: "Count size",
+      description: "Set count size:",
+      action: {
+        type: "select",
+        items: ["extra small", "small", "medium", "large", "extra large"],
+        onChange: (evt) => {
+          hiddeCounters();
+          setSize(evt);
+          onPageLoad();
+        },
+      },
+    },
   ],
 };
 
@@ -87,6 +102,25 @@ function setOpacity(value) {
       break;
     default:
       countOpacity = "";
+  }
+}
+
+function setSize(value) {
+  switch (value) {
+    case "extra small":
+      countSize = "rc-xsmall";
+      break;
+    case "small":
+      countSize = "rc-small";
+      break;
+    case "large":
+      countSize = "rc-large";
+      break;
+    case "extra large":
+      countSize = "rc-xlarge";
+      break;
+    default:
+      countSize = "";
   }
 }
 
@@ -107,6 +141,9 @@ export default {
     if (extensionAPI.settings.get("opacity") === null)
       await extensionAPI.settings.set("opacity", "0.5");
     setOpacity(extensionAPI.settings.get("opacity"));
+    if (extensionAPI.settings.get("size") === null)
+      await extensionAPI.settings.set("size", "medium");
+    setSize(extensionAPI.settings.get("size"));
 
     await extensionAPI.settings.panel.create(panelConfig);
 
