@@ -7,4 +7,4 @@
   
 ### Fix:
   - no more duplicated counter in the sidebar when page refs are between brackets
-  - works on daily log, when displaying new daily pages
+  - counts are displayed on daily log, when expanding new daily pages
