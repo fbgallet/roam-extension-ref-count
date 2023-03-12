@@ -16,7 +16,7 @@ export let countOpacity;
 export let countSize;
 
 const panelConfig = {
-  tabTitle: "Blocks infos",
+  tabTitle: "Page references counter",
   settings: [
     {
       id: "toggle",
@@ -179,36 +179,7 @@ export default {
       addListeners();
     } else connectObservers();
 
-    // Add command to block context menu
-    // roamAlphaAPI.ui.blockContextMenu.addCommand({
-    //   label: "Color Highlighter: Remove color tags",
-    //   "display-conditional": (e) => e["block-string"].includes("#c:"),
-    //   callback: (e) => removeHighlightsFromBlock(e["block-uid"], removeOption),
-    // });
-
-    // Add SmartBlock command
-    // const insertCmd = {
-    //   text: "INSERTFOOTNOTE",
-    //   help: "Insert automatically numbered footnote (requires the Footnotes extension)",
-    //   handler: (context) => () => {
-    //     noteInline = null;
-    //     currentPos = new position();
-    //     currentPos.s = context.currentContent.length;
-    //     currentPos.e = currentPos.s;
-    //     insertOrRemoveFootnote(context.targetUid);
-    //     return "";
-    //   },
-    // };
-    // if (window.roamjs?.extension?.smartblocks) {
-    //   window.roamjs.extension.smartblocks.registerCommand(insertCmd);
-    // } else {
-    //   document.body.addEventListener(`roamjs:smartblocks:loaded`, () => {
-    //     window.roamjs?.extension.smartblocks &&
-    //       window.roamjs.extension.smartblocks.registerCommand(insertCmd);
-    //   });
-    // }
-
-    console.log("References counter extension loaded.");
+    console.log("Page references counter extension loaded.");
     //return;
   },
   onunload: () => {
@@ -218,13 +189,6 @@ export default {
     removeListeners();
     hiddeCounters();
 
-    // window.roamAlphaAPI.ui.commandPalette.removeCommand({
-    //   label: "Footnotes: Reorder footnotes on current page",
-    // });
-
-    // roamAlphaAPI.ui.blockContextMenu.removeCommand({
-    //   label: "Color Highlighter: Remove color tags",
-    // });
-    console.log("References counter extension unloaded");
+    console.log("Page references counter extension unloaded");
   },
 };

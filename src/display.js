@@ -1,7 +1,8 @@
 import { countClass, countOpacity, countSize } from ".";
 import { counters, refs } from "./observers";
-import { getBlocksIncludingRefByTitle } from "./utils";
+import { getBlocksIncludingRefByTitle, insertAfter } from "./utils";
 
+// exclude format tags: #. , #c: , #c- , #blck: , #blck-
 const excludedTags = /^\..*|^c:.*|^c-.*|^blck[:|-].*/;
 
 export function insertSupAfterRefs(elt = document) {
@@ -96,8 +97,4 @@ export function displayCounter(
 export function hiddeCounters(elt = document) {
   let counters = elt.querySelectorAll("[class^='ref-count-']");
   counters.forEach((c) => c.parentElement.remove());
-}
-
-function insertAfter(existingNode, newNode) {
-  existingNode.parentNode.insertBefore(newNode, existingNode.nextSibling);
 }
