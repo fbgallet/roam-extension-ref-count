@@ -5,6 +5,6 @@
 ### Updates:
   - command in command palette to toggle 'display on hover'
   
-### Fix:
+### Fixes:
   - no more duplicated counter in the sidebar when page refs are between brackets
   - counts are displayed on daily log, when expanding new daily pages
