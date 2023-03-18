@@ -146,7 +146,13 @@ function onBlockUpdate(mutation) {
     autocompleteCount &&
     document.querySelector(".rm-autocomplete__results")
   ) {
-    onAutocomplete();
+    if (
+      mutation[0].target.value.slice(
+        mutation[0].target.selectionStart,
+        mutation[0].target.selectionStart + 2
+      ) === "]]"
+    )
+      onAutocomplete();
     //return;
   }
 }

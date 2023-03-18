@@ -10,7 +10,9 @@ export function insertSupAfterRefs(elt = document) {
   // counters = [];
   //let b, e;
   setTimeout(() => {
-    let mentions = elt.querySelectorAll(".rm-page-ref--link");
+    let mentions = elt.querySelectorAll(
+      ".rm-page-ref--link, .rm-page-ref--namespace"
+    );
     //    b = performance.now();
     mentions.forEach((mention) => {
       if (!hasCount(mention)) {
