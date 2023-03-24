@@ -9,6 +9,7 @@ import {
 } from "./observers";
 
 export let isOn;
+export let attributeCounter;
 export let autocompleteCount;
 let countOnHover;
 export let countClass;
@@ -27,6 +28,19 @@ const panelConfig = {
         onChange: (evt) => {
           toggleCounters(isOn);
           isOn = !isOn;
+        },
+      },
+    },
+    {
+      id: "attribute",
+      name: "Include attributes ?",
+      description: "Display count for attributes:: (need inline count):",
+      action: {
+        type: "switch",
+        onChange: (evt) => {
+          attributeCounter = !attributeCounter;
+          hiddeCounters();
+          onPageLoad();
         },
       },
     },
@@ -130,9 +144,13 @@ function toggleOnHover() {
 
 export default {
   onload: async ({ extensionAPI }) => {
+    console.log(extensionAPI.settings);
     if (extensionAPI.settings.get("toggle") === null)
       await extensionAPI.settings.set("toggle", true);
     isOn = extensionAPI.settings.get("toggle");
+    if (extensionAPI.settings.get("attribute") === null)
+      await extensionAPI.settings.set("attribute", true);
+    attributeCounter = extensionAPI.settings.get("attribute");
     if (extensionAPI.settings.get("toggleAutocomplete") === null)
       await extensionAPI.settings.set("toggleAutocomplete", true);
     autocompleteCount = extensionAPI.settings.get("toggleAutocomplete");

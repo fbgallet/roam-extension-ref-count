@@ -153,7 +153,6 @@ function onBlockUpdate(mutation) {
       ) === "]]"
     )
       onAutocomplete();
-    //return;
   }
 }
 

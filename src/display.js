@@ -1,4 +1,4 @@
-import { countClass, countOpacity, countSize } from ".";
+import { attributeCounter, countClass, countOpacity, countSize } from ".";
 import { counters, refs } from "./observers";
 import { getBlocksIncludingRefByTitle, insertAfter } from "./utils";
 
@@ -33,13 +33,15 @@ export function insertSupAfterRefs(elt = document) {
     });
   }, 20);
 
-  let attributs = elt.querySelectorAll(".rm-attr-ref");
-  attributs.forEach((attr) => {
-    if (!hasCount(attr)) {
-      let title = attr.textContent.slice(0, -1);
-      displayCounter(attr, getCountOptimized(title), "attribute");
-    }
-  });
+  if (attributeCounter) {
+    let attributs = elt.querySelectorAll(".rm-attr-ref");
+    attributs.forEach((attr) => {
+      if (!hasCount(attr)) {
+        let title = attr.textContent.slice(0, -1);
+        displayCounter(attr, getCountOptimized(title), "attribute");
+      }
+    });
+  }
 }
 
 function hasCount(elt) {
