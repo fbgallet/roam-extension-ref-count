@@ -1,3 +1,7 @@
+## v.3 on March 31th, 2023
+### Fixes:
+  - count in autocomplete box for tags and attributes was broken
+
 ## v.2 on March 24th, 2023
 ### New feature:
   - customize the size of the counter, from extra small to extra large
