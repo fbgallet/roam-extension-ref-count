@@ -146,14 +146,30 @@ function onBlockUpdate(mutation) {
     autocompleteCount &&
     document.querySelector(".rm-autocomplete__results")
   ) {
+    // if (
+    //   mutation[0].target.value.slice(
+    //     mutation[0].target.selectionStart,
+    //     mutation[0].target.selectionStart + 2
+    //   ) === "]]"
+    // )
     if (
-      mutation[0].target.value.slice(
-        mutation[0].target.selectionStart,
-        mutation[0].target.selectionStart + 2
-      ) === "]]"
+      isPageAutocomplete(
+        mutation[0].target.value
+          ? mutation[0].target.value.slice(0, mutation[0].target.selectionStart)
+          : ""
+      )
     )
       onAutocomplete();
   }
+}
+
+function isPageAutocomplete(content) {
+  const autocompleteTriggerRegex = /\[\[|\#|\(\(|;;/g;
+  let matches = content.match(autocompleteTriggerRegex);
+  if (!matches) return true;
+  let lastMatch = matches[matches.length - 1];
+  if (lastMatch === "((" || lastMatch === ";;") return false;
+  return true;
 }
 
 function onAutocomplete() {
