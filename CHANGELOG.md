@@ -1,4 +1,4 @@
-## v.3 on March 31th, 2023
+## v.3 on April 12th, 2023
 ### Fixes:
   - count in autocomplete box for tags and attributes was broken
 
