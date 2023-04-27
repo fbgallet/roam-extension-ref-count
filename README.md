@@ -1,9 +1,10 @@
 # Page references counter
 
-### Counter for page references (including tags and attributes) as superscript. 
+### Counter for page references (including tags and attributes) as superscript. Click on the couter to open linked references in the sidebar.
 ### 🔎 Reference counts are also displayed when you search for a reference, inline or in Quick search, in the autocomplete box, which is particularly useful to identify the actually used pages and the unused or wrong spellings!
+### 🆕 New in v.4: see at a glane, through the page reference, if the page is empty or not.
 
-![ref-count-v1](https://user-images.githubusercontent.com/74436347/218118672-4d7e74aa-e47f-49fb-ac95-7e59e2b1b854.gif)
+https://user-images.githubusercontent.com/74436347/234729861-caa18d90-bb9c-42bb-a803-62596c030ae3.mp4
 
 If you find that counters are sometimes annoying, here are some options (with a command in the Command Palette and customizable hotkeys for the first two):
 - toggle on/off inline count or search count (separately),
