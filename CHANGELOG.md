@@ -1,3 +1,10 @@
+## v.4 on April 27th, 2023
+### New features:
+  - see if page is empty or not
+  - click on counter to open linked references in sidebar
+### Fixes:
+  - better stability, better support of very large number of linked references or page references on current page
+
 ## v.3 on April 12th, 2023
 ### Fixes:
   - count in autocomplete box for tags and attributes was broken
