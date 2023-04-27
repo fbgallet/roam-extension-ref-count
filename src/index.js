@@ -12,6 +12,7 @@ export let isOn;
 export let attributeCounter;
 export let autocompleteCount;
 let countOnHover;
+export let displayPageStatus;
 export let countClass;
 export let countOpacity;
 export let countSize;
@@ -64,6 +65,20 @@ const panelConfig = {
         type: "switch",
         onChange: (evt) => {
           toggleOnHover();
+        },
+      },
+    },
+    {
+      id: "displayPageStatus",
+      name: "Visual differentiation: pages with content / empty pages",
+      description:
+        "Gray background+solid underline / no backgrund+dotted underline:",
+      action: {
+        type: "switch",
+        onChange: (evt) => {
+          displayPageStatus = !displayPageStatus;
+          hiddeCounters();
+          onPageLoad();
         },
       },
     },
@@ -160,6 +175,9 @@ export default {
     countOnHover
       ? (countClass = "ref-count-hidden")
       : (countClass = "ref-count-visible");
+    if (extensionAPI.settings.get("displayPageStatus") === null)
+      await extensionAPI.settings.set("displayPageStatus", true);
+    displayPageStatus = extensionAPI.settings.get("displayPageStatus");
     if (extensionAPI.settings.get("opacity") === null)
       await extensionAPI.settings.set("opacity", "0.5");
     setOpacity(extensionAPI.settings.get("opacity"));

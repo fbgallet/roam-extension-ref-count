@@ -5,6 +5,7 @@ import {
   hiddeCounters,
   insertSupAfterRefs,
 } from "./display";
+import { getUidByPageTitle } from "./utils";
 
 var runners = {
   menuItems: [],
@@ -86,51 +87,56 @@ function onNewPageInDailyLog(mutation) {
 }
 
 function onBlockUpdate(mutation) {
-  if (
-    mutation[0].target.closest(".roam-sidebar-container") &&
-    mutation[0].target.className === "ref-count-extension"
-    //mutation[0].target.closest(".rm-topbar")
-  )
-    return;
-  else if (mutation[0].target.closest(".rm-topbar")) {
+  if (mutation[0].target.closest(".rm-topbar")) {
     let search = document.querySelector(".rm-find-or-create__menu");
     if (autocompleteCount && search) onSearch(search);
     else return;
   }
-  //console.log(mutation);
   if (isOn) {
+    if (
+      (mutation[0].target.closest(".roam-sidebar-container") &&
+        mutation[0].target.className === "ref-count-extension") ||
+      // mutations in code block
+      mutation[0].target.className.includes("cm-")
+    )
+      return;
+    //console.log(mutation);
     for (let i = 0; i < mutation.length; i++) {
       if (
         mutation[i].addedNodes.length > 0 &&
         mutation[i].target.localName != "span" &&
         mutation[i].target.localName != "textarea"
       ) {
-        if (mutation[i].addedNodes[0].classList?.contains("rm-block")) {
-          //  console.log("blocks expanded");
-          insertSupAfterRefs(mutation[i].addedNodes[0]);
-          //return;
+        if (mutation[0].addedNodes[0]?.classList?.contains("rm-block")) {
+          // console.log("blocks expanded");
+          // console.log(mutation);
+          insertSupAfterRefs(mutation[0].target);
+          // .target contains all children blocks, no need to process all mutations.addedNodes
+          //insertSupAfterRefs(mutation[i].addedNodes[0]);
+          return;
         } else if (
-          mutation[i].addedNodes[0].classList?.contains("rm-block__input")
+          mutation[i].addedNodes[0]?.classList?.contains("rm-block__input")
         ) {
           // console.log("block updated");
           insertSupAfterRefs(mutation[i].target);
           //return;
         } else if (
-          mutation[i].addedNodes[0].classList?.contains("rm-mentions") ||
-          mutation[i].addedNodes[0].parentElement?.className ===
+          mutation[i].addedNodes[0]?.classList?.contains("rm-mentions") ||
+          mutation[i].addedNodes[0]?.parentElement?.className ===
             "rm-ref-page-view"
         ) {
-          //console.log("In Linked refs");
-          let elt = mutation[i].target.querySelectorAll(
+          // console.log("In Linked refs");
+          insertSupAfterRefs(mutation[i].target);
+          /*let elt = mutation[i].target.querySelectorAll(
             ".roam-block-container"
           );
           elt.forEach((node) => {
             insertSupAfterRefs(node);
           });
-          return;
+          return;*/
         } else if (
           //console.log("In right sidebar");
-          mutation[i].addedNodes[0].parentElement?.className ===
+          mutation[i].addedNodes[0]?.parentElement?.className ===
           "sidebar-content"
         ) {
           insertSupAfterRefs(mutation[i].addedNodes[0]);
@@ -188,10 +194,10 @@ function onAutocomplete() {
       suggestions.forEach((ref) => {
         let title = ref.getAttribute("title");
         if (title != "Search for a Page" && title != "Search for a Block") {
-          let count = getCountOptimized(title);
+          let uid = getUidByPageTitle(title);
           displayCounter(
             ref.childNodes[0].childNodes[0],
-            count,
+            getCountOptimized(title, uid),
             "autocomplete",
             "ref-count-visible"
           );
@@ -209,10 +215,10 @@ function onSearch(searchMenu) {
   titles.forEach((title) => {
     let textTitle = title.childNodes[0].textContent;
     if (!textTitle.includes("New Page:")) {
-      let count = getCountOptimized(textTitle);
+      let uid = getUidByPageTitle(textTitle);
       displayCounter(
         title.childNodes[0],
-        count,
+        getCountOptimized(textTitle, uid),
         "autocomplete",
         "ref-count-visible"
       );
@@ -233,8 +239,7 @@ export function onPageLoad(e) {
   disconnectObserver("tags");
   disconnectObserver("sidebar");
   disconnectObserver("logs");
-  refs = [];
-  counters = [];
+  refs.length = 0;
   setTimeout(() => {
     insertSupAfterRefs();
   }, 50);
@@ -247,6 +252,7 @@ export function onPageLoad(e) {
 export function toggleCounters(isOn) {
   if (isOn) {
     hiddeCounters();
+    refs.length = 0;
     //disconnectObserver("tags");
     disconnectObserver("sidebar");
     disconnectObserver("logs");

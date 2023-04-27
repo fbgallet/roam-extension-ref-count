@@ -7,6 +7,7 @@
 .ref-count-visible {
   font-size: 64%;
   padding-left: 2px;
+  cursor: alias;
 }
 
 .rc-op-025 {
@@ -60,3 +61,62 @@ sup.rc-large {
 sup.rc-xlarge {
   top: -0.25em;
 }
+sup.ref-count-visible:hover {
+  opacity: 1;
+}
+
+/* .rc-void-page {
+  padding-right: 2px;
+  border-radius: 2px;
+} */
+/* .rm-page-ref--link:has(+ span > sup.ref-count-visible.rc-void-page) {
+  
+} */
+.rm-page-ref--link:has(+ span > sup.rc-notvoid-page) {
+  background-color: rgba(128, 128, 128, 0.1);
+}
+
+.rm-page-ref--link:has(+ span > sup.rc-notvoid-page):hover,
+.rm-page-ref:has(+ span > sup.ref-count-visible:hover.rc-notvoid-page),
+.rm-autocomplete-result:has(sup.rc-notvoid-page:hover),
+.rm-search-title:has(sup.rc-notvoid-page:hover) {
+  text-decoration: underline 2px;
+  text-underline-offset: 4px;
+  border-bottom: none;
+}
+.rm-page-ref--link:has(+ span > sup.rc-void-page):hover,
+.rm-page-ref:has(+ span > sup.ref-count-visible:hover.rc-void-page),
+.rm-autocomplete-result:has(sup.rc-void-page:hover),
+.rm-search-title:has(sup.rc-void-page:hover) {
+  text-decoration: underline dotted 2px;
+  text-underline-offset: 4px;
+  border-bottom: none;
+}
+.rm-page-ref--tag:hover + span > sup.ref-count-visible.rc-notvoid-page,
+.rm-page-ref--tag:hover + span > sup.ref-count-hidden.rc-notvoid-page {
+  text-decoration: underline 1px;
+  text-underline-offset: 2px;
+}
+.rm-page-ref--tag:hover + span > sup.ref-count-visible.rc-void-page,
+.rm-page-ref--tag:hover + span > sup.ref-count-hidden.rc-void-page {
+  text-decoration: underline dotted 1px;
+  text-underline-offset: 2px;
+}
+
+.rm-page-ref--tag:has(+ span > sup.rc-void-page):hover,
+.rm-autocomplete-result:has(sup.rc-notvoid-page) {
+  font-weight: 500;
+}
+.rm-autocomplete-result:has(sup.rc-void-page) {
+  opacity: 0.66;
+}
+.rm-search-title:has(sup.rc-void-page) {
+  opacity: 0.66;
+}
+.rm-search-title sup.ref-count-visible {
+  margin-left: 2px;
+}
+
+/* .rm-search-title:first-child:has(sup.rc-notvoid-page) {
+  background-color: rgba(128, 128, 128, 0.1);
+} */
