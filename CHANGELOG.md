@@ -4,6 +4,7 @@
   - click on counter to open linked references in sidebar
 ### Fixes:
   - better stability, better support of very large number of linked references or page references on current page
+  - #sup (for Footnotes extension compatibiliy), #sub and #sticky are excluded, like all #.tags (for css format)
 
 ## v.3 on April 12th, 2023
 ### Fixes:
