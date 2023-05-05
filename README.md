@@ -1,10 +1,8 @@
 # Page references counter
 
-**Counter for page references (including tags and attributes) as superscript. Click on the couter to open linked references in the sidebar.**
+**Counter for page references (including tags and attributes) as superscript.**
 
 🔎 Reference counts are also displayed **when you search for a reference, inline or in Quick search, in the autocomplete box**, which is particularly useful to identify the actually used pages and the unused or wrong spellings!**
-
-🆕 New in v.4: see at a glane, through the page reference, **if the page is empty or not.**
 
 https://user-images.githubusercontent.com/74436347/234729861-caa18d90-bb9c-42bb-a803-62596c030ae3.mp4
 
@@ -16,10 +14,12 @@ If you find that counters are sometimes annoying, here are some options (with a 
 
 With opacity to 0.25 and size to small, the counters will be very subtle.
 
-### See if a page is empty or not
-If a page is empty, its inline reference is underlined with a dotted line when hovering over it (and only while hovering over the counter, for tags), and its title is greyed in seach and auto-complete boxes.
+### 🆕 New in v.4: Click on the counter to open linked references in the sidebar
 
-If a page is not empty, its inline reference has a light grey background and is underlind with a solid line when hovering over it.
+### 🆕 New in v.4: See if a page is empty or not
+If a page is empty, its reference is underlined with a dotted line when hovering over it (for tags: only when hovering over the counter), and its title is greyed in seach and auto-complete boxes.
+
+If a page is not empty, its inline reference has a light grey background (only page refs, not tags) and is underlined with a solid line when hovering over it (for tags: when hovering over the counter).
 
 [See changelog here](https://github.com/fbgallet/roam-extension-ref-count/blob/main/CHANGELOG.md)
 
