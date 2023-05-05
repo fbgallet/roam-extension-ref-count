@@ -14,7 +14,7 @@ import {
 } from "./utils";
 
 // exclude format tags: #. , #c: , #c- , #blck: , #blck-
-const excludedTags = /^\..*|^c:.*|^c-.*|^blck[:|-].*/;
+const excludedTags = /^\..*|^c:.*|^c-.*|^blck[:|-].*|sup|sub|sticky/;
 
 export function insertSupAfterRefs(elt = document) {
   // refs = [];
