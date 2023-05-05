@@ -1,6 +1,6 @@
 # Page references counter
 
-**Counter for page references (including tags and attributes) as superscript.**
+**Counter for page references (including tags and attributes) as superscript, customizable and clickable.**
 
 🔎 Reference counts are also displayed **when you search for a reference, inline or in Quick search, in the autocomplete box**, which is particularly useful to identify the actually used pages and the unused or wrong spellings!**
 
