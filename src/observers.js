@@ -195,12 +195,13 @@ function onAutocomplete() {
         let title = ref.getAttribute("title");
         if (title != "Search for a Page" && title != "Search for a Block") {
           let uid = getUidByPageTitle(title);
-          displayCounter(
-            ref.childNodes[0].childNodes[0],
-            getCountOptimized(title, uid),
-            "autocomplete",
-            "ref-count-visible"
-          );
+          if (uid)
+            displayCounter(
+              ref.childNodes[0].childNodes[0],
+              getCountOptimized(title, uid),
+              "autocomplete",
+              "ref-count-visible"
+            );
         }
       });
     }
@@ -212,16 +213,17 @@ function onSearch(searchMenu) {
   let titles = searchMenu.querySelectorAll(".rm-search-title");
   hiddeCounters(searchMenu);
   disconnectObserver("tags");
-  titles.forEach((title) => {
+  titles.forEach((title, index) => {
     let textTitle = title.childNodes[0].textContent;
-    if (!textTitle.includes("New Page:")) {
+    if (index > 0 || textTitle.slice(0, 9) !== "New Page: ") {
       let uid = getUidByPageTitle(textTitle);
-      displayCounter(
-        title.childNodes[0],
-        getCountOptimized(textTitle, uid),
-        "autocomplete",
-        "ref-count-visible"
-      );
+      if (uid)
+        displayCounter(
+          title.childNodes[0],
+          getCountOptimized(textTitle, uid),
+          "autocomplete",
+          "ref-count-visible"
+        );
     }
   });
   connectObservers();

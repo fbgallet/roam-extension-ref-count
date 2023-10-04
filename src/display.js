@@ -19,7 +19,7 @@ const excludedTags = /^\..*|^c:.*|^c-.*|^blck[:|-].*|sup|sub|sticky/;
 export function insertSupAfterRefs(elt = document) {
   // refs = [];
   // counters = [];
-  let b, e;
+  // let b, e;
   setTimeout(() => {
     let mentions = elt.querySelectorAll(
       ".rm-page-ref--link:not(.parent-path-wrapper .rm-page-ref--link), .rm-page-ref--namespace"
@@ -96,12 +96,13 @@ export function getCountOptimized(title, uid = null) {
     count = getBlocksIncludingRefByTitle(title);
     uid = displayPageStatus ? (uid ? uid : getUidByPageTitle(title)) : null;
     isVoid = displayPageStatus ? isVoidPage(uid) : null;
-    refs.push({
-      title: title,
-      count: count,
-      isVoid: isVoid,
-      uid: uid,
-    });
+    if (uid)
+      refs.push({
+        title: title,
+        count: count,
+        isVoid: isVoid,
+        uid: uid,
+      });
   }
   return { count, isVoid, uid };
 }

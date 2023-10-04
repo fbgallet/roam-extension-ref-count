@@ -60,7 +60,11 @@ export function getStringById(id) {
 }
 
 export function getUidByPageTitle(title) {
-  return window.roamAlphaAPI.pull("[:block/uid]", [":node/title", title])[
-    ":block/uid"
-  ];
+  // if (title.includes('"')) {
+  //   //title = title.replace('"', '\\"');
+  //   console.log(title);
+  // }
+  let result = window.roamAlphaAPI.pull("[:block/uid]", [":node/title", title]);
+  if (result) return result[":block/uid"];
+  return null;
 }
