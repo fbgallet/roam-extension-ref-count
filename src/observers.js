@@ -12,7 +12,7 @@ var runners = {
   observers: [],
 };
 export var refs = [];
-export var counters = [];
+// export var counters = [];
 
 export function connectObservers(logPage = null) {
   if (autocompleteCount || isOn)

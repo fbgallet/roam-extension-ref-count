@@ -1,5 +1,6 @@
 export const uidRegex = /\(\([^\)]{9}\)\)/g;
 export const pageRegex = /\[\[.*\]\]/g; // very simplified, not recursive...
+const excludingTitleRegex = /\"|\\/;
 
 // export function getBlocksIncludingRef(uid) {
 //   return window.roamAlphaAPI.q(
@@ -29,6 +30,10 @@ export const pageRegex = /\[\[.*\]\]/g; // very simplified, not recursive...
 // }
 
 export function getBlocksIncludingRefByTitle(title) {
+  if (excludingTitleRegex.test(title)) {
+    //   //title = title.replace('"', '\\"');
+    return 0;
+  }
   let result = window.roamAlphaAPI.q(
     `[:find (count ?b)
       :where [?r :node/title "${title}"] 
@@ -60,10 +65,11 @@ export function getStringById(id) {
 }
 
 export function getUidByPageTitle(title) {
-  // if (title.includes('"')) {
-  //   //title = title.replace('"', '\\"');
-  //   console.log(title);
-  // }
+  if (excludingTitleRegex.test(title)) {
+    //   //title = title.replace('"', '\\"');
+    console.log(title);
+    return null;
+  }
   let result = window.roamAlphaAPI.pull("[:block/uid]", [":node/title", title]);
   if (result) return result[":block/uid"];
   return null;
