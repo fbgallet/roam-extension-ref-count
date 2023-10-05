@@ -1,3 +1,8 @@
+## v.5 on October 5th, 2023
+### Fixes:
+  - page name with `"` or `\` characters are now supported
+  - optimization, displaying the results in the search bar should no longer be slowed down
+
 ## v.4 on April 27th, 2023
 ### New features:
   - see if page is empty or not
