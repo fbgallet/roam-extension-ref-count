@@ -30,14 +30,13 @@ const excludingTitleRegex = /\"|\\/;
 // }
 
 export function getBlocksIncludingRefByTitle(title) {
-  if (excludingTitleRegex.test(title)) {
-    //   //title = title.replace('"', '\\"');
-    return 0;
-  }
+  // if (excludingTitleRegex.test(title)) {
+  //   title = title.replace('"', '\\"');
+  //   return 0;
+  // }
   let result = window.roamAlphaAPI.q(
-    `[:find (count ?b)
-      :where [?r :node/title "${title}"] 
-           [?b :block/refs ?r]]`
+    `[:find (count ?b) :in $ ?title :where [?r :node/title ?title] [?b :block/refs ?r]]`,
+    title
   );
   if (result.length > 0) return result[0][0];
   else return 0;
@@ -65,12 +64,14 @@ export function getStringById(id) {
 }
 
 export function getUidByPageTitle(title) {
-  if (excludingTitleRegex.test(title)) {
-    //   //title = title.replace('"', '\\"');
-    console.log(title);
-    return null;
-  }
-  let result = window.roamAlphaAPI.pull("[:block/uid]", [":node/title", title]);
+  // if (excludingTitleRegex.test(title)) {
+  //   //return null;
+  // }
+  let result = window.roamAlphaAPI.pull("[:block/uid]", [
+    ":node/title",
+    `${title}`,
+  ]);
+  if (title === 'test\\"') console.log(result);
   if (result) return result[":block/uid"];
   return null;
 }
