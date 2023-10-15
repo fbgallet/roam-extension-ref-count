@@ -1,4 +1,4 @@
-import { autocompleteCount, isOn } from ".";
+import { autocompleteCount, displayPageStatus, isOn } from ".";
 import {
   displayCounter,
   getCountOptimized,
@@ -255,7 +255,7 @@ export function toggleCounters(isOn) {
   if (isOn) {
     hiddeCounters();
     refs.length = 0;
-    //disconnectObserver("tags");
+    disconnectObserver("tags");
     disconnectObserver("sidebar");
     disconnectObserver("logs");
     removeListeners();

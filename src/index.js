@@ -9,7 +9,7 @@ import {
 } from "./observers";
 
 export let isOn;
-export let attributeCounter;
+export let referenceCounter, tagCounter, attributeCounter;
 export let autocompleteCount;
 let countOnHover;
 export let displayPageStatus;
@@ -21,25 +21,42 @@ const panelConfig = {
   tabTitle: "Page references counter",
   settings: [
     {
-      id: "toggle",
-      name: "Toggle inline count",
-      description: "Toggle inline page reference & tag counter:",
+      id: "references",
+      name: "Counter for Page References",
+      description: "Toggle inline [[Page Reference]] counter:",
       action: {
         type: "switch",
         onChange: (evt) => {
-          toggleCounters(isOn);
-          isOn = !isOn;
+          referenceCounter = !referenceCounter;
+          setOnOrOff();
+          hiddeCounters();
+          onPageLoad();
         },
       },
     },
     {
-      id: "attribute",
-      name: "Include attributes ?",
-      description: "Display count for attributes:: (need inline count):",
+      id: "tags",
+      name: "Counter for Tags",
+      description: "Toggle inline #Tag counter:",
+      action: {
+        type: "switch",
+        onChange: (evt) => {
+          tagCounter = !tagCounter;
+          setOnOrOff();
+          hiddeCounters();
+          onPageLoad();
+        },
+      },
+    },
+    {
+      id: "attributes",
+      name: "Counter for Attributes",
+      description: "Toggle inline Attributes:: counter:",
       action: {
         type: "switch",
         onChange: (evt) => {
           attributeCounter = !attributeCounter;
+          setOnOrOff();
           hiddeCounters();
           onPageLoad();
         },
@@ -148,6 +165,10 @@ function setSize(value) {
   }
 }
 
+function setOnOrOff() {
+  isOn = referenceCounter || tagCounter || attributeCounter ? true : false;
+}
+
 function toggleOnHover() {
   hiddeCounters();
   countOnHover = !countOnHover;
@@ -160,12 +181,15 @@ function toggleOnHover() {
 export default {
   onload: async ({ extensionAPI }) => {
     console.log(extensionAPI.settings);
-    if (extensionAPI.settings.get("toggle") === null)
-      await extensionAPI.settings.set("toggle", true);
-    isOn = extensionAPI.settings.get("toggle");
-    if (extensionAPI.settings.get("attribute") === null)
-      await extensionAPI.settings.set("attribute", true);
-    attributeCounter = extensionAPI.settings.get("attribute");
+    if (extensionAPI.settings.get("references") === null)
+      await extensionAPI.settings.set("references", true);
+    referenceCounter = extensionAPI.settings.get("references");
+    if (extensionAPI.settings.get("tags") === null)
+      await extensionAPI.settings.set("tags", true);
+    tagCounter = extensionAPI.settings.get("tags");
+    if (extensionAPI.settings.get("attributes") === null)
+      await extensionAPI.settings.set("attributes", false);
+    attributeCounter = extensionAPI.settings.get("attributes");
     if (extensionAPI.settings.get("toggleAutocomplete") === null)
       await extensionAPI.settings.set("toggleAutocomplete", true);
     autocompleteCount = extensionAPI.settings.get("toggleAutocomplete");
@@ -210,6 +234,7 @@ export default {
       },
     });
 
+    setOnOrOff();
     if (isOn) {
       onPageLoad();
       addListeners();

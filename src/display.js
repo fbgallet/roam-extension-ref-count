@@ -4,6 +4,8 @@ import {
   countOpacity,
   countSize,
   displayPageStatus,
+  referenceCounter,
+  tagCounter,
 } from ".";
 import { refs } from "./observers";
 import {
@@ -14,48 +16,51 @@ import {
 } from "./utils";
 
 // exclude format tags: #. , #c: , #c- , #blck: , #blck-
-const excludedTags = /^\..*|^c:.*|^c-.*|^blck[:|-].*|sup|sub|sticky/;
+const excludedTags = /^\..*|^c:.*|^c-.*|^blck[:|-|border].*|sup|sub|sticky/;
 
 export function insertSupAfterRefs(elt = document) {
   // refs = [];
   // counters = [];
   // let b, e;
   setTimeout(() => {
-    let mentions = elt.querySelectorAll(
-      ".rm-page-ref--link:not(.parent-path-wrapper .rm-page-ref--link), .rm-page-ref--namespace"
-    );
-    // b = performance.now();
-    mentions.forEach((mention) => {
-      if (!hasCount(mention)) {
-        let title = mention.parentElement.dataset.linkTitle;
-        let uid = mention.parentElement.dataset.linkUid;
-        // let isVoid = isVoidPage(mention.parentElement.dataset.linkUid);
-        // isVoid
-        //   ? console.log(`${title} est vide!`)
-        //   : console.log(`${title} a un contenu.`);
-        displayCounter(mention, getCountOptimized(title, uid), "ref");
-        //displayCounter(mention, getCountOptimized2(title, uid), "ref", false);
-      }
-    });
-    // e = performance.now();
-    // console.log(`1: ${e - b}`);
-    // console.log(refs);
-    let tags = elt.querySelectorAll(
-      ".rm-page-ref--tag:not(.parent-path-wrapper .rm-page-ref--tag)"
-    );
-    // b = performance.now();
-    tags.forEach((mention) => {
-      if (!hasCount(mention)) {
-        let title = mention.dataset.tag;
-        if (!isExcludedFromCount(title))
-          displayCounter(mention, getCountOptimized(title), "tag");
-      }
-    });
-    // e = performance.now();
-    // console.log(`2: ${e - b}`);
-    // console.log(refs);
+    if (referenceCounter) {
+      let mentions = elt.querySelectorAll(
+        ".rm-page-ref--link:not(.parent-path-wrapper .rm-page-ref--link), .rm-page-ref--namespace"
+      );
+      // b = performance.now();
+      mentions.forEach((mention) => {
+        if (!hasCount(mention)) {
+          let title = mention.parentElement.dataset.linkTitle;
+          let uid = mention.parentElement.dataset.linkUid;
+          // let isVoid = isVoidPage(mention.parentElement.dataset.linkUid);
+          // isVoid
+          //   ? console.log(`${title} est vide!`)
+          //   : console.log(`${title} a un contenu.`);
+          displayCounter(mention, getCountOptimized(title, uid), "ref");
+          //displayCounter(mention, getCountOptimized2(title, uid), "ref", false);
+        }
+      });
+      // e = performance.now();
+      // console.log(`1: ${e - b}`);
+      // console.log(refs);
+    }
+    if (tagCounter) {
+      let tags = elt.querySelectorAll(
+        ".rm-page-ref--tag:not(.parent-path-wrapper .rm-page-ref--tag)"
+      );
+      // b = performance.now();
+      tags.forEach((mention) => {
+        if (!hasCount(mention)) {
+          let title = mention.dataset.tag;
+          if (!isExcludedFromCount(title))
+            displayCounter(mention, getCountOptimized(title), "tag");
+        }
+      });
+      // e = performance.now();
+      // console.log(`2: ${e - b}`);
+      // console.log(refs);
+    }
   }, 20);
-
   if (attributeCounter) {
     let attributs = elt.querySelectorAll(
       ".rm-attr-ref:not(.parent-path-wrapper .rm-attr-ref)"

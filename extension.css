@@ -72,11 +72,13 @@ sup.ref-count-visible:hover {
 /* .rm-page-ref--link:has(+ span > sup.ref-count-visible.rc-void-page) {
   
 } */
-.rm-page-ref--link:has(+ span > sup.rc-notvoid-page) {
+.rm-page-ref--link:has(+ span > sup.rc-notvoid-page),
+.rm-page-ref--link:has(+ span + span > sup.rc-notvoid-page) {
   background-color: rgba(128, 128, 128, 0.1);
 }
 
 .rm-page-ref--link:has(+ span > sup.rc-notvoid-page):hover,
+.rm-page-ref--link:has(+ span + span > sup.rc-notvoid-page):hover,
 .rm-page-ref:has(+ span > sup.ref-count-visible:hover.rc-notvoid-page),
 .rm-autocomplete-result:has(sup.rc-notvoid-page:hover),
 .rm-search-title:has(sup.rc-notvoid-page:hover) {
@@ -85,6 +87,7 @@ sup.ref-count-visible:hover {
   border-bottom: none;
 }
 .rm-page-ref--link:has(+ span > sup.rc-void-page):hover,
+.rm-page-ref--link:has(+ span + span > sup.rc-void-page):hover,
 .rm-page-ref:has(+ span > sup.ref-count-visible:hover.rc-void-page),
 .rm-autocomplete-result:has(sup.rc-void-page:hover),
 .rm-search-title:has(sup.rc-void-page:hover) {
