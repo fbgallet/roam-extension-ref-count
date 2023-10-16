@@ -4,7 +4,7 @@
 
 🔎 Reference counts are also displayed **when you search for a reference, inline or in Quick search, in the autocomplete box**, which is particularly useful to identify the actually used pages and the unused or wrong spellings!\*\*
 
-https://user-images.githubusercontent.com/74436347/234729861-caa18d90-bb9c-42bb-a803-62596c030ae3.mp4
+![ref counter 2](https://github.com/fbgallet/roam-extension-ref-count/assets/74436347/9942e40e-aa4d-4d98-af78-e3faf3f86777)
 
 If you find that counters are sometimes annoying, you can enable them only for page reference or tags or attributes, independently (🆕 New in v.5), see options above. Here are some other possibilities (with a command in the Command Palette and customizable hotkeys for the first two):
 
