@@ -1,4 +1,4 @@
-import { autocompleteCount, displayPageStatus, isOn } from ".";
+import { autocompleteCount, isOn } from ".";
 import {
   displayCounter,
   getCountOptimized,
