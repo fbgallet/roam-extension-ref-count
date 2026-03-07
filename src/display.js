@@ -19,36 +19,23 @@ import {
 const excludedTags = /^\..*|^c:.*|^c-.*|^blck[:|-|border].*|sup|sub|sticky/;
 
 export function insertSupAfterRefs(elt = document) {
-  // refs = [];
-  // counters = [];
-  // let b, e;
   setTimeout(() => {
     if (referenceCounter) {
       let mentions = elt.querySelectorAll(
         ".rm-page-ref--link:not(.parent-path-wrapper .rm-page-ref--link), .rm-page-ref--namespace"
       );
-      // b = performance.now();
       mentions.forEach((mention) => {
         if (!hasCount(mention)) {
           let title = mention.parentElement.dataset.linkTitle;
           let uid = mention.parentElement.dataset.linkUid;
-          // let isVoid = isVoidPage(mention.parentElement.dataset.linkUid);
-          // isVoid
-          //   ? console.log(`${title} est vide!`)
-          //   : console.log(`${title} a un contenu.`);
           displayCounter(mention, getCountOptimized(title, uid), "ref");
-          //displayCounter(mention, getCountOptimized2(title, uid), "ref", false);
         }
       });
-      // e = performance.now();
-      // console.log(`1: ${e - b}`);
-      // console.log(refs);
     }
     if (tagCounter) {
       let tags = elt.querySelectorAll(
         ".rm-page-ref--tag:not(.parent-path-wrapper .rm-page-ref--tag)"
       );
-      // b = performance.now();
       tags.forEach((mention) => {
         if (!hasCount(mention)) {
           let title = mention.dataset.tag;
@@ -56,22 +43,19 @@ export function insertSupAfterRefs(elt = document) {
             displayCounter(mention, getCountOptimized(title), "tag");
         }
       });
-      // e = performance.now();
-      // console.log(`2: ${e - b}`);
-      // console.log(refs);
+    }
+    if (attributeCounter) {
+      let attributs = elt.querySelectorAll(
+        ".rm-attr-ref:not(.parent-path-wrapper .rm-attr-ref)"
+      );
+      attributs.forEach((attr) => {
+        if (!hasCount(attr)) {
+          let title = attr.textContent.slice(0, -1);
+          displayCounter(attr, getCountOptimized(title), "attribute");
+        }
+      });
     }
   }, 20);
-  if (attributeCounter) {
-    let attributs = elt.querySelectorAll(
-      ".rm-attr-ref:not(.parent-path-wrapper .rm-attr-ref)"
-    );
-    attributs.forEach((attr) => {
-      if (!hasCount(attr)) {
-        let title = attr.textContent.slice(0, -1);
-        displayCounter(attr, getCountOptimized(title), "attribute");
-      }
-    });
-  }
 }
 
 function hasCount(elt) {
@@ -90,24 +74,19 @@ function isExcludedFromCount(title) {
 }
 
 export function getCountOptimized(title, uid = null) {
-  let index = refs.findIndex((ref) => ref.title === title);
   let count;
   let isVoid = null;
-  if (index != -1) {
-    count = refs[index].count;
-    isVoid = refs[index].isVoid;
-    uid = uid ? uid : refs[index].uid;
+  const cached = refs.get(title);
+  if (cached) {
+    count = cached.count;
+    isVoid = cached.isVoid;
+    uid = uid ? uid : cached.uid;
   } else {
     count = getBlocksIncludingRefByTitle(title);
     uid = displayPageStatus ? (uid ? uid : getUidByPageTitle(title)) : null;
     isVoid = displayPageStatus ? isVoidPage(uid) : null;
     if (uid)
-      refs.push({
-        title: title,
-        count: count,
-        isVoid: isVoid,
-        uid: uid,
-      });
+      refs.set(title, { count, isVoid, uid });
   }
   return { count, isVoid, uid };
 }
@@ -165,9 +144,6 @@ export function hiddeCounters(elt = document) {
   let counters = elt.querySelectorAll("[class^='ref-count-']");
   counters.forEach((c) => {
     c.parentElement.remove();
-    c.removeEventListener("mousedown", () => clickOnCount(counter), {
-      once: true,
-    });
   });
-  refs.length = 0;
+  refs.clear();
 }

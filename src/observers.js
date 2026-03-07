@@ -11,7 +11,7 @@ var runners = {
   menuItems: [],
   observers: [],
 };
-export var refs = [];
+export var refs = new Map();
 // export var counters = [];
 
 export function connectObservers(logPage = null) {
@@ -87,17 +87,20 @@ function onNewPageInDailyLog(mutation) {
 }
 
 function onBlockUpdate(mutation) {
-  if (mutation[0].target.closest(".rm-topbar")) {
+  const target0 = mutation[0].target;
+  // Text nodes and detached nodes don't have .closest()
+  if (!(target0 instanceof Element)) return;
+  if (target0.closest(".rm-topbar")) {
     let search = document.querySelector(".rm-find-or-create__menu");
     if (autocompleteCount && search) onSearch(search);
     else return;
   }
   if (isOn) {
     if (
-      (mutation[0].target.closest(".roam-sidebar-container") &&
-        mutation[0].target.className === "ref-count-extension") ||
+      (target0.closest(".roam-sidebar-container") &&
+        target0.className === "ref-count-extension") ||
       // mutations in code block
-      mutation[0].target.className.includes("cm-")
+      (typeof target0.className === "string" && target0.className.includes("cm-"))
     )
       return;
     //console.log(mutation);
@@ -182,29 +185,28 @@ function onAutocomplete() {
   const blockAutocomplete = document.getElementsByClassName(
     "rm-autocomplete__results"
   )[0];
-  //console.log(blockAutocomplete);
   if (blockAutocomplete) {
     let suggestions = blockAutocomplete.querySelectorAll(".dont-unfocus-block");
-    if (suggestions) {
-      // if block autocomplete, stop here
-      if (suggestions[0].querySelector(".bp3-text-overflow-ellipsis")) {
-        return;
-      }
-      hiddeCounters(blockAutocomplete);
-      suggestions.forEach((ref) => {
-        let title = ref.getAttribute("title");
-        if (title != "Search for a Page" && title != "Search for a Block") {
-          let uid = getUidByPageTitle(title);
-          if (uid)
-            displayCounter(
-              ref.childNodes[0].childNodes[0],
-              getCountOptimized(title, uid),
-              "autocomplete",
-              "ref-count-visible"
-            );
-        }
-      });
+    if (!suggestions || suggestions.length === 0) return;
+    // if block autocomplete, stop here
+    if (suggestions[0].querySelector(".bp3-text-overflow-ellipsis")) {
+      return;
     }
+    hiddeCounters(blockAutocomplete);
+    suggestions.forEach((ref) => {
+      let title = ref.getAttribute("title");
+      if (title != "Search for a Page" && title != "Search for a Block") {
+        let uid = getUidByPageTitle(title);
+        const targetNode = ref.childNodes[0]?.childNodes[0];
+        if (uid && targetNode)
+          displayCounter(
+            targetNode,
+            getCountOptimized(title, uid),
+            "autocomplete",
+            "ref-count-visible"
+          );
+      }
+    });
   }
 }
 
@@ -214,12 +216,14 @@ function onSearch(searchMenu) {
   hiddeCounters(searchMenu);
   disconnectObserver("tags");
   titles.forEach((title, index) => {
-    let textTitle = title.childNodes[0].textContent;
+    const textNode = title.childNodes[0];
+    if (!textNode) return;
+    let textTitle = textNode.textContent;
     if (index > 0 || textTitle.slice(0, 9) !== "New Page: ") {
       let uid = getUidByPageTitle(textTitle);
       if (uid)
         displayCounter(
-          title.childNodes[0],
+          textNode,
           getCountOptimized(textTitle, uid),
           "autocomplete",
           "ref-count-visible"
@@ -241,7 +245,7 @@ export function onPageLoad(e) {
   disconnectObserver("tags");
   disconnectObserver("sidebar");
   disconnectObserver("logs");
-  refs.length = 0;
+  refs.clear();
   setTimeout(() => {
     insertSupAfterRefs();
   }, 50);
@@ -254,7 +258,7 @@ export function onPageLoad(e) {
 export function toggleCounters(isOn) {
   if (isOn) {
     hiddeCounters();
-    refs.length = 0;
+    refs.clear();
     disconnectObserver("tags");
     disconnectObserver("sidebar");
     disconnectObserver("logs");

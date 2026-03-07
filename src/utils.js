@@ -43,24 +43,30 @@ export function getBlocksIncludingRefByTitle(title) {
 }
 
 export function insertAfter(existingNode, newNode) {
+  if (!existingNode?.parentNode) return;
   existingNode.parentNode.insertBefore(newNode, existingNode.nextSibling);
 }
 
 export function isVoidPage(uid) {
+  if (!uid) return true;
   let children = window.roamAlphaAPI.pull("[:block/children]", [
     ":block/uid",
     uid,
   ]);
-  if (children) {
-    if (children[":block/children"].length == 1) {
-      let r = getStringById(children[":block/children"][0][":db/id"]);
-      if (r.trim().length == 0) return true;
-    } else return false;
-  } else return true;
+  if (!children) return true;
+  const childList = children[":block/children"];
+  if (!childList) return true;
+  if (childList.length == 1) {
+    let r = getStringById(childList[0][":db/id"]);
+    if (r == null || r.trim().length == 0) return true;
+    return false;
+  }
+  return false;
 }
 
 export function getStringById(id) {
-  return window.roamAlphaAPI.pull("[:block/string]", id)[":block/string"];
+  const result = window.roamAlphaAPI.pull("[:block/string]", id);
+  return result ? result[":block/string"] : null;
 }
 
 export function getUidByPageTitle(title) {
@@ -71,7 +77,6 @@ export function getUidByPageTitle(title) {
     ":node/title",
     `${title}`,
   ]);
-  if (title === 'test\\"') console.log(result);
   if (result) return result[":block/uid"];
   return null;
 }

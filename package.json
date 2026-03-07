@@ -1,15 +1,15 @@
 {
   "name": "roam-extension-ref-count",
-  "version": "1.0.0",
-  "description": "![image](https://user-images.githubusercontent.com/74436347/189387081-fbb7ef64-5fde-441b-97c4-0bc7bae3e520.png)",
+  "version": "6.0.0",
+  "description": "Inline counter of Roam page references",
   "main": "extension.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npx roamjs-scripts dev --depot"
   },
   "author": "Fabrice Gallet",
   "license": "MIT",
   "dependencies": {
-    "@samepage/scripts": "^0.75.0",
     "roamjs-scripts": "^0.27.0"
   },
   "repository": "github:fbgallet/roam-extension-ref-count",
