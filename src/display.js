@@ -5,6 +5,7 @@ import {
   countSize,
   displayPageStatus,
   referenceCounter,
+  reversePageStatus,
   tagCounter,
 } from ".";
 import { refs } from "./observers";
@@ -29,6 +30,16 @@ export function insertSupAfterRefs(elt = document) {
           let title = mention.parentElement.dataset.linkTitle;
           let uid = mention.parentElement.dataset.linkUid;
           displayCounter(mention, getCountOptimized(title, uid), "ref");
+        }
+      });
+      let refPageTitles = elt.querySelectorAll(
+        ".rm-ref-page-view-title .rm-page__title"
+      );
+      refPageTitles.forEach((titleSpan) => {
+        if (!hasCount(titleSpan)) {
+          let title = titleSpan.textContent;
+          let uid = getUidByPageTitle(title);
+          displayCounter(titleSpan, getCountOptimized(title, uid), "ref");
         }
       });
     }
@@ -111,8 +122,8 @@ export function displayCounter(
   elt.innerHTML = `<sup class="${displayClass} ${countOpacity} ${countSize} ${
     displayPageStatus
       ? counter.isVoid
-        ? "rc-void-page"
-        : "rc-notvoid-page"
+        ? reversePageStatus ? "rc-notvoid-page" : "rc-void-page"
+        : reversePageStatus ? "rc-void-page" : "rc-notvoid-page"
       : ""
   }">${counter.count}</sup>`;
   switch (type) {

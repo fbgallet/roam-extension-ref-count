@@ -25,6 +25,16 @@ If a page is not empty, its inline reference has a light grey background (only p
 
 This formatting appears in Roam page only if inline counters are enabled (they always appear in search/autocomplete boxes).
 
+You can **reverse** this visual differentiation (option "Reverse visual differentiation" in settings): the grey background will then appear on **empty pages** instead of pages with content — useful if you have many more content pages than empty pages and find the background on most references distracting.
+
+#### CSS customization
+
+The two states are controlled by these CSS classes on the counter `<sup>` element:
+- `.rc-notvoid-page` — page with content (grey background + solid underline on hover by default)
+- `.rc-void-page` — empty page (no background + dotted underline on hover by default)
+
+You can override these in your Roam custom CSS to change colors, background, borders, etc.
+
 [See changelog here](https://github.com/fbgallet/roam-extension-ref-count/blob/main/CHANGELOG.md)
 
 ---

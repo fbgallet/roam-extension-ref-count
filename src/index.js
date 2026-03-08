@@ -13,6 +13,7 @@ export let referenceCounter, tagCounter, attributeCounter;
 export let autocompleteCount;
 let countOnHover;
 export let displayPageStatus;
+export let reversePageStatus;
 export let countClass;
 export let countOpacity;
 export let countSize;
@@ -94,6 +95,20 @@ const panelConfig = {
         type: "switch",
         onChange: (evt) => {
           displayPageStatus = !displayPageStatus;
+          hiddeCounters();
+          onPageLoad();
+        },
+      },
+    },
+    {
+      id: "reversePageStatus",
+      name: "Reverse visual differentiation",
+      description:
+        "Reverse: gray background for empty pages, no background for pages with content:",
+      action: {
+        type: "switch",
+        onChange: (evt) => {
+          reversePageStatus = !reversePageStatus;
           hiddeCounters();
           onPageLoad();
         },
@@ -202,6 +217,9 @@ export default {
     if (extensionAPI.settings.get("displayPageStatus") === null)
       await extensionAPI.settings.set("displayPageStatus", true);
     displayPageStatus = extensionAPI.settings.get("displayPageStatus");
+    if (extensionAPI.settings.get("reversePageStatus") === null)
+      await extensionAPI.settings.set("reversePageStatus", false);
+    reversePageStatus = extensionAPI.settings.get("reversePageStatus");
     if (extensionAPI.settings.get("opacity") === null)
       await extensionAPI.settings.set("opacity", "0.5");
     setOpacity(extensionAPI.settings.get("opacity"));

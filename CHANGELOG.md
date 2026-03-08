@@ -1,3 +1,15 @@
+## v.6 on March, 2026 More stable version
+
+### Updates:
+
+- Page title header group in Linked references & Unlinked references are also decorated with reference counter
+- Option to reverse visual differentiation for references of empty page (make them grey)
+
+### Fixes
+
+- Important fixes which should fix the tab-freezing issue some users experienced when clicking in the search bar (thanks to Claude Opus 4.6)
+- Other optimization and error handling fixes
+
 ## v.5 on October 15th, 2023
 
 ### Updates:
