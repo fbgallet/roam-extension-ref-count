@@ -13,6 +13,7 @@ var runners = {
 };
 export var refs = new Map();
 // export var counters = [];
+let isProcessing = false;
 
 export function connectObservers(logPage = null) {
   if (autocompleteCount || isOn)
@@ -87,88 +88,88 @@ function onNewPageInDailyLog(mutation) {
 }
 
 function onBlockUpdate(mutation) {
-  const target0 = mutation[0].target;
-  // Text nodes and detached nodes don't have .closest()
-  if (!(target0 instanceof Element)) return;
-  if (target0.closest(".rm-topbar")) {
-    let search = document.querySelector(".rm-find-or-create__menu");
-    if (autocompleteCount && search) onSearch(search);
-    else return;
-  }
-  if (isOn) {
-    if (
-      (target0.closest(".roam-sidebar-container") &&
-        target0.className === "ref-count-extension") ||
-      // mutations in code block
-      (typeof target0.className === "string" && target0.className.includes("cm-"))
-    )
-      return;
-    //console.log(mutation);
-    for (let i = 0; i < mutation.length; i++) {
+  if (isProcessing) return;
+  isProcessing = true;
+  try {
+    const target0 = mutation[0].target;
+    // Text nodes and detached nodes don't have .closest()
+    if (!(target0 instanceof Element)) return;
+    if (target0.closest(".rm-topbar")) {
+      let search = document.querySelector(".rm-find-or-create__menu");
+      if (autocompleteCount && search) onSearch(search);
+      else return;
+    }
+    if (isOn) {
       if (
-        mutation[i].addedNodes.length > 0 &&
-        mutation[i].target.localName != "span" &&
-        mutation[i].target.localName != "textarea"
-      ) {
-        if (mutation[0].addedNodes[0]?.classList?.contains("rm-block")) {
-          // console.log("blocks expanded");
-          // console.log(mutation);
-          insertSupAfterRefs(mutation[0].target);
-          // .target contains all children blocks, no need to process all mutations.addedNodes
-          //insertSupAfterRefs(mutation[i].addedNodes[0]);
-          return;
-        } else if (
-          mutation[i].addedNodes[0]?.classList?.contains("rm-block__input")
+        (target0.closest(".roam-sidebar-container") &&
+          target0.className === "ref-count-extension") ||
+        // mutations in code block
+        (typeof target0.className === "string" && target0.className.includes("cm-"))
+      )
+        return;
+      //console.log(mutation);
+      for (let i = 0; i < mutation.length; i++) {
+        if (
+          mutation[i].addedNodes.length > 0 &&
+          mutation[i].target.localName != "span" &&
+          mutation[i].target.localName != "textarea"
         ) {
-          // console.log("block updated");
-          insertSupAfterRefs(mutation[i].target);
-          //return;
-        } else if (
-          mutation[i].addedNodes[0]?.classList?.contains("rm-mentions") ||
-          mutation[i].addedNodes[0]?.parentElement?.className ===
-            "rm-ref-page-view"
-        ) {
-          // console.log("In Linked refs");
-          insertSupAfterRefs(mutation[i].target);
-          /*let elt = mutation[i].target.querySelectorAll(
-            ".roam-block-container"
-          );
-          elt.forEach((node) => {
-            insertSupAfterRefs(node);
-          });
-          return;*/
-        } else if (
-          //console.log("In right sidebar");
-          mutation[i].addedNodes[0]?.parentElement?.className ===
-          "sidebar-content"
-        ) {
-          insertSupAfterRefs(mutation[i].addedNodes[0]);
-          return;
-        } else if (mutation[i].target.className === "rm-sidebar-window") {
-          insertSupAfterRefs(mutation[i].target);
-          return;
+          if (mutation[0].addedNodes[0]?.classList?.contains("rm-block")) {
+            // console.log("blocks expanded");
+            // console.log(mutation);
+            insertSupAfterRefs(mutation[0].target);
+            // .target contains all children blocks, no need to process all mutations.addedNodes
+            //insertSupAfterRefs(mutation[i].addedNodes[0]);
+            return;
+          } else if (
+            mutation[i].addedNodes[0]?.classList?.contains("rm-block__input")
+          ) {
+            // console.log("block updated");
+            insertSupAfterRefs(mutation[i].target);
+            //return;
+          } else if (
+            mutation[i].addedNodes[0]?.classList?.contains("rm-mentions") ||
+            mutation[i].addedNodes[0]?.parentElement?.className ===
+              "rm-ref-page-view"
+          ) {
+            // console.log("In Linked refs");
+            insertSupAfterRefs(mutation[i].target);
+            /*let elt = mutation[i].target.querySelectorAll(
+              ".roam-block-container"
+            );
+            elt.forEach((node) => {
+              insertSupAfterRefs(node);
+            });
+            return;*/
+          } else if (
+            //console.log("In right sidebar");
+            mutation[i].addedNodes[0]?.parentElement?.className ===
+            "sidebar-content"
+          ) {
+            insertSupAfterRefs(mutation[i].addedNodes[0]);
+            return;
+          } else if (mutation[i].target.className === "rm-sidebar-window") {
+            insertSupAfterRefs(mutation[i].target);
+            return;
+          }
         }
       }
     }
-  }
-  if (
-    autocompleteCount &&
-    document.querySelector(".rm-autocomplete__results")
-  ) {
-    // if (
-    //   mutation[0].target.value.slice(
-    //     mutation[0].target.selectionStart,
-    //     mutation[0].target.selectionStart + 2
-    //   ) === "]]"
-    // )
     if (
-      isPageAutocomplete(
-        mutation[0].target.value
-          ? mutation[0].target.value.slice(0, mutation[0].target.selectionStart)
-          : ""
+      autocompleteCount &&
+      document.querySelector(".rm-autocomplete__results")
+    ) {
+      if (
+        isPageAutocomplete(
+          mutation[0].target.value
+            ? mutation[0].target.value.slice(0, mutation[0].target.selectionStart)
+            : ""
+        )
       )
-    )
-      onAutocomplete();
+        onAutocomplete();
+    }
+  } finally {
+    isProcessing = false;
   }
 }
 
@@ -193,6 +194,7 @@ function onAutocomplete() {
       return;
     }
     hiddeCounters(blockAutocomplete);
+    disconnectObserver("tags");
     suggestions.forEach((ref) => {
       let title = ref.getAttribute("title");
       if (title != "Search for a Page" && title != "Search for a Block") {
@@ -207,6 +209,7 @@ function onAutocomplete() {
           );
       }
     });
+    connectObservers();
   }
 }
 
