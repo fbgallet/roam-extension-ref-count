@@ -1,3 +1,9 @@
+## v.7 on March 21th, 2026
+
+### Updates:
+
+- Removed reference counter in inline autocomplete box (now a native Roam feature)
+
 ## v.6 on March, 2026 More stable version
 
 ### Updates:

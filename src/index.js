@@ -65,9 +65,9 @@ const panelConfig = {
     },
     {
       id: "toggleAutocomplete",
-      name: "Toggle autocomplete count",
+      name: "Toggle search bar count",
       description:
-        "Toggle page references counter in search and autocomplete box:",
+        "Toggle page references counter in search bar:",
       action: {
         type: "switch",
         onChange: (evt) => {
@@ -238,7 +238,7 @@ export default {
       },
     });
     extensionAPI.ui.commandPalette.addCommand({
-      label: "Page ref counter: Toggle counter in search / autocomplete box",
+      label: "Page ref counter: Toggle counter in search bar",
       callback: async () => {
         autocompleteCount = !autocompleteCount;
         extensionAPI.settings.set("toggleAutocomplete", autocompleteCount);

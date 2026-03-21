@@ -155,61 +155,8 @@ function onBlockUpdate(mutation) {
         }
       }
     }
-    if (
-      autocompleteCount &&
-      document.querySelector(".rm-autocomplete__results")
-    ) {
-      if (
-        isPageAutocomplete(
-          mutation[0].target.value
-            ? mutation[0].target.value.slice(0, mutation[0].target.selectionStart)
-            : ""
-        )
-      )
-        onAutocomplete();
-    }
   } finally {
     isProcessing = false;
-  }
-}
-
-function isPageAutocomplete(content) {
-  const autocompleteTriggerRegex = /\[\[|\#|\(\(|;;/g;
-  let matches = content.match(autocompleteTriggerRegex);
-  if (!matches) return true;
-  let lastMatch = matches[matches.length - 1];
-  if (lastMatch === "((" || lastMatch === ";;") return false;
-  return true;
-}
-
-function onAutocomplete() {
-  const blockAutocomplete = document.getElementsByClassName(
-    "rm-autocomplete__results"
-  )[0];
-  if (blockAutocomplete) {
-    let suggestions = blockAutocomplete.querySelectorAll(".dont-unfocus-block");
-    if (!suggestions || suggestions.length === 0) return;
-    // if block autocomplete, stop here
-    if (suggestions[0].querySelector(".bp3-text-overflow-ellipsis")) {
-      return;
-    }
-    hiddeCounters(blockAutocomplete);
-    disconnectObserver("tags");
-    suggestions.forEach((ref) => {
-      let title = ref.getAttribute("title");
-      if (title != "Search for a Page" && title != "Search for a Block") {
-        let uid = getUidByPageTitle(title);
-        const targetNode = ref.childNodes[0]?.childNodes[0];
-        if (uid && targetNode)
-          displayCounter(
-            targetNode,
-            getCountOptimized(title, uid),
-            "autocomplete",
-            "ref-count-visible"
-          );
-      }
-    });
-    connectObservers();
   }
 }
 
