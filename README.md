@@ -4,7 +4,8 @@
 
 🔎 Reference counts are also displayed **in Quick search (search bar)**, which is particularly useful to identify the actually used pages and the unused or wrong spellings! (in v.7, reference counts are in the page autocomplete box are no more supported by the extension since they are now provided natively by Roam)
 
-> [!NOTE] 🆕 in v.6:
+> [!NOTE]
+> 🆕 in v.6:
 > Major fixes have been made; the extension should now be much more stable and should no longer cause the browser tab to freeze, an issue some users encountered when clicking in the search bar.
 
 ![ref counter 2](https://github.com/fbgallet/roam-extension-ref-count/assets/74436347/9942e40e-aa4d-4d98-af78-e3faf3f86777)
